@@ -685,7 +685,7 @@
         <scene sceneID="R2V-B0-nI4">
             <objects>
                 <windowController id="B8D-0N-5wS" sceneMemberID="viewController">
-                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
+                    <window key="window" title="Blind MIDI" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
                         <rect key="contentRect" x="196" y="240" width="480" height="270"/>
@@ -787,6 +787,13 @@
                                     <action selector="onPingButtonPushed:" target="XfG-lQ-9wD" id="70D-32-oAk"/>
                                 </connections>
                             </button>
+                            <button misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4Ni-1w-zlp">
+                                <rect key="frame" x="302" y="220" width="53" height="18"/>
+                                <buttonCell key="cell" type="check" title="Blind" bezelStyle="regularSquare" imagePosition="left" inset="2" id="9mN-VK-Qa9">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
                         </subviews>
                         <constraints>
                             <constraint firstItem="yoU-MY-A6V" firstAttribute="leading" secondItem="ozB-0n-XBs" secondAttribute="leading" id="0eW-W8-ttb"/>
@@ -795,11 +802,14 @@
                             <constraint firstAttribute="trailing" secondItem="lTg-ct-pTa" secondAttribute="trailing" constant="204" id="QQB-7i-D1D"/>
                             <constraint firstItem="yoU-MY-A6V" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="9" id="WZG-4d-IiI"/>
                             <constraint firstItem="lTg-ct-pTa" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" id="Ynm-3E-PhX"/>
+                            <constraint firstAttribute="trailing" secondItem="4Ni-1w-zlp" secondAttribute="trailing" constant="127" id="iAb-yI-4Aa"/>
+                            <constraint firstItem="4Ni-1w-zlp" firstAttribute="top" secondItem="ozB-0n-XBs" secondAttribute="top" id="s8b-Jw-r4j"/>
                             <constraint firstAttribute="trailing" secondItem="wBD-9j-Bly" secondAttribute="trailing" constant="20" id="tVG-FK-FeU"/>
                             <constraint firstAttribute="bottom" secondItem="lTg-ct-pTa" secondAttribute="bottom" constant="20" id="wt6-Pt-SQX"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="ibBlindBox" destination="4Ni-1w-zlp" id="dww-pl-xHU"/>
                         <outlet property="ibMidiSourcesTableView" destination="ozB-0n-XBs" id="PP7-Xd-O3V"/>
                     </connections>
                 </viewController>
