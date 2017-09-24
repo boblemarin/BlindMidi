@@ -7,13 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		38C492571F783FE6008145E1 /* MidiHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38C492561F783FE6008145E1 /* MidiHelper.swift */; };
 		38E0299F1F75ABF10068F171 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E0299E1F75ABF10068F171 /* AppDelegate.swift */; };
 		38E029A11F75ABF10068F171 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E029A01F75ABF10068F171 /* ViewController.swift */; };
 		38E029A31F75ABF10068F171 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 38E029A21F75ABF10068F171 /* Assets.xcassets */; };
 		38E029A61F75ABF10068F171 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 38E029A41F75ABF10068F171 /* Main.storyboard */; };
+		38E029B01F75AC120068F171 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38E029AF1F75AC120068F171 /* CoreMIDI.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		38C492561F783FE6008145E1 /* MidiHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MidiHelper.swift; sourceTree = "<group>"; };
 		38E0299B1F75ABF10068F171 /* Blind.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blind.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		38E0299E1F75ABF10068F171 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		38E029A01F75ABF10068F171 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -21,6 +24,7 @@
 		38E029A51F75ABF10068F171 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		38E029A71F75ABF10068F171 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		38E029A81F75ABF10068F171 /* Blind.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Blind.entitlements; sourceTree = "<group>"; };
+		38E029AF1F75AC120068F171 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -28,6 +32,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				38E029B01F75AC120068F171 /* CoreMIDI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -39,6 +44,7 @@
 			children = (
 				38E0299D1F75ABF10068F171 /* Blind */,
 				38E0299C1F75ABF10068F171 /* Products */,
+				38E029AE1F75AC120068F171 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -54,6 +60,7 @@
 			isa = PBXGroup;
 			children = (
 				38E0299E1F75ABF10068F171 /* AppDelegate.swift */,
+				38C492561F783FE6008145E1 /* MidiHelper.swift */,
 				38E029A01F75ABF10068F171 /* ViewController.swift */,
 				38E029A21F75ABF10068F171 /* Assets.xcassets */,
 				38E029A41F75ABF10068F171 /* Main.storyboard */,
@@ -61,6 +68,14 @@
 				38E029A81F75ABF10068F171 /* Blind.entitlements */,
 			);
 			path = Blind;
+			sourceTree = "<group>";
+		};
+		38E029AE1F75AC120068F171 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				38E029AF1F75AC120068F171 /* CoreMIDI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -136,6 +151,7 @@
 			files = (
 				38E029A11F75ABF10068F171 /* ViewController.swift in Sources */,
 				38E0299F1F75ABF10068F171 /* AppDelegate.swift in Sources */,
+				38C492571F783FE6008145E1 /* MidiHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -266,7 +282,7 @@
 				CODE_SIGN_ENTITLEMENTS = Blind/Blind.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 5HRSUQ6XKM;
+				DEVELOPMENT_TEAM = H36N3XBBB8;
 				INFOPLIST_FILE = Blind/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = be.minimal.Blind;
@@ -282,7 +298,7 @@
 				CODE_SIGN_ENTITLEMENTS = Blind/Blind.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 5HRSUQ6XKM;
+				DEVELOPMENT_TEAM = H36N3XBBB8;
 				INFOPLIST_FILE = Blind/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = be.minimal.Blind;
