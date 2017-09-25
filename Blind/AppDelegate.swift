@@ -11,10 +11,14 @@ import Cocoa
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
-
-
   func applicationDidFinishLaunching(_ aNotification: Notification) {
-    // Insert code here to initialize your application
+    let appDefaults = [
+      "blindModeToggleChannel": 177,
+      "blindModeToggleCC": 15,
+      "blindModeFaderChannel": 176,
+      "blindModeFaderCC": 15
+      ] as [String : Any]
+    UserDefaults.standard.register(defaults: appDefaults)
   }
 
   func applicationWillTerminate(_ aNotification: Notification) {

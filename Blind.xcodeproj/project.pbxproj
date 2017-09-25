@@ -17,7 +17,7 @@
 
 /* Begin PBXFileReference section */
 		38C492561F783FE6008145E1 /* MidiHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MidiHelper.swift; sourceTree = "<group>"; };
-		38E0299B1F75ABF10068F171 /* Blind.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blind.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		38E0299B1F75ABF10068F171 /* BlindMIDI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BlindMIDI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		38E0299E1F75ABF10068F171 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		38E029A01F75ABF10068F171 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		38E029A21F75ABF10068F171 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -51,7 +51,7 @@
 		38E0299C1F75ABF10068F171 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				38E0299B1F75ABF10068F171 /* Blind.app */,
+				38E0299B1F75ABF10068F171 /* BlindMIDI.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -81,9 +81,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		38E0299A1F75ABF10068F171 /* Blind */ = {
+		38E0299A1F75ABF10068F171 /* BlindMIDI */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 38E029AB1F75ABF10068F171 /* Build configuration list for PBXNativeTarget "Blind" */;
+			buildConfigurationList = 38E029AB1F75ABF10068F171 /* Build configuration list for PBXNativeTarget "BlindMIDI" */;
 			buildPhases = (
 				38E029971F75ABF10068F171 /* Sources */,
 				38E029981F75ABF10068F171 /* Frameworks */,
@@ -93,9 +93,9 @@
 			);
 			dependencies = (
 			);
-			name = Blind;
+			name = BlindMIDI;
 			productName = Blind;
-			productReference = 38E0299B1F75ABF10068F171 /* Blind.app */;
+			productReference = 38E0299B1F75ABF10068F171 /* BlindMIDI.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -127,7 +127,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				38E0299A1F75ABF10068F171 /* Blind */,
+				38E0299A1F75ABF10068F171 /* BlindMIDI */,
 			);
 		};
 /* End PBXProject section */
@@ -285,7 +285,7 @@
 				DEVELOPMENT_TEAM = H36N3XBBB8;
 				INFOPLIST_FILE = Blind/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = be.minimal.Blind;
+				PRODUCT_BUNDLE_IDENTIFIER = io.hlo.BlindMidi;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 			};
@@ -301,7 +301,7 @@
 				DEVELOPMENT_TEAM = H36N3XBBB8;
 				INFOPLIST_FILE = Blind/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = be.minimal.Blind;
+				PRODUCT_BUNDLE_IDENTIFIER = io.hlo.BlindMidi;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 			};
@@ -319,7 +319,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		38E029AB1F75ABF10068F171 /* Build configuration list for PBXNativeTarget "Blind" */ = {
+		38E029AB1F75ABF10068F171 /* Build configuration list for PBXNativeTarget "BlindMIDI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				38E029AC1F75ABF10068F171 /* Debug */,

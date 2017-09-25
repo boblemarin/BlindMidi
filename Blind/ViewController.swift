@@ -14,52 +14,34 @@ var midiListener:ViewController?
 func MyMIDIReadProc(pktList: UnsafePointer<MIDIPacketList>,
                     readProcRefCon: UnsafeMutableRawPointer?, srcConnRefCon: UnsafeMutableRawPointer?) -> Void
 {
-//  let packetList:MIDIPacketList = pktList.pointee
-//  let srcRef:MIDIEndpointRef = srcConnRefCon!.load(as: MIDIEndpointRef.self)
-//
-//  print("MIDI Received From Source: \(getDisplayName(srcRef))")
-//
-//  var packet:MIDIPacket = packetList.packet
-//  for _ in 1...packetList.numPackets
-//  {
-//    let bytes = Mirror(reflecting: packet.data).children
-//    var dumpStr = ""
-//
-//    // bytes mirror contains all the zero values in the ridiulous packet data tuple
-//    // so use the packet length to iterate.
-//    var i = packet.length
-//    for (_, attr) in bytes.enumerated()
-//    {
-//      dumpStr += String(format:"$%02X ", attr.value as! UInt8)
-//      i -= 1
-//      if (i <= 0)
-//      {
-//        break
-//      }
-//    }
-//
-//    print(dumpStr)
-//    packet = MIDIPacketNext(&packet).pointee
-//  }
+
   midiListener?.onMidiReceived(pktList)
 }
 
 class ViewController: NSViewController {
+ 
+  enum LearnMode {
+    case Toggle
+    case Fader
+    case None
+  }
   
-//  static var z: UInt8 = 0
-//  var midiDataTuple = (z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z)
-
-  
-  
-  @IBOutlet weak var ibBlindBox: NSButton!
+  @IBOutlet weak var ibEyeImage: NSImageView!
   @IBOutlet weak var ibMidiSourcesTableView: NSTableView!
+  @IBOutlet weak var ibBlindToggleField: NSTextField!
+  @IBOutlet weak var ibToggleLearnButton: NSButton!
+  @IBOutlet weak var ibBlindFaderField: NSTextField!
+  @IBOutlet weak var ibFaderLearnButton: NSButton!
+  @IBOutlet weak var ibProgressFader: NSProgressIndicator!
   
-  let clientName = "BlindMidi"
+  let clientName = "BlindMIDI"
   var midiSourceNames = [String]()
   var midiClient:MIDIClientRef = 0
   var midiOut:MIDIEndpointRef = 0
   var midiIn:MIDIPortRef = 0
   
+  var isLearnModeActive = false
+  var currentLearnMode:LearnMode = .None
   var isBlindModeActive = false
   var blindModeToggleChannel:UInt8 = 177
   var blindModeToggleCC:UInt8 = 15
@@ -71,7 +53,16 @@ class ViewController: NSViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    // create virtual source
+    // get saved values from CC
+    let defaults = UserDefaults.standard
+    blindModeToggleChannel = UInt8(defaults.integer(forKey: "blindModeToggleChannel"))
+    blindModeToggleCC = UInt8(defaults.integer(forKey: "blindModeToggleCC"))
+    blindModeFaderChannel = UInt8(defaults.integer(forKey: "blindModeFaderChannel"))
+    blindModeFaderCC = UInt8(defaults.integer(forKey: "blindModeFaderCC"))
+    
+    ibEyeImage.alphaValue = 0.5
+    
+    // create virtual client, source and port
     midiListener = self
     MIDIClientCreate(clientName as CFString, nil, nil, &midiClient)
     MIDISourceCreate(midiClient, clientName as CFString, &midiOut)
@@ -83,7 +74,15 @@ class ViewController: NSViewController {
     // configure table view
     ibMidiSourcesTableView.delegate = self
     ibMidiSourcesTableView.dataSource = self
-    // Do any additional setup after loading the view.
+  }
+  
+  override func viewWillAppear() {
+    
+    // show toggle and fader cc values
+    DispatchQueue.main.async {
+      self.ibBlindToggleField.stringValue = "\(self.blindModeToggleChannel - 175)/\(self.blindModeToggleCC)"
+      self.ibBlindFaderField.stringValue = "\(self.blindModeFaderChannel - 175)/\(self.blindModeFaderCC)"
+    }
   }
 
   override var representedObject: Any? {
@@ -95,29 +94,24 @@ class ViewController: NSViewController {
   func refreshMidiInputList() {
     ibMidiSourcesTableView.reloadData()
   }
+
+  @IBAction func onToggleLearnButtonPushed(_ sender: Any) {
+    currentLearnMode = .Toggle
+    isLearnModeActive = true
+    DispatchQueue.main.async {
+      self.ibToggleLearnButton.title = "..."
+    }
+  }
   
-  @IBAction func onPingButtonPushed(_ sender: Any) {
-    var packet = MIDIPacket()
-    packet.timeStamp = 0
-    packet.length = 3
-//    packet.data = midiDataTuple
-    
-    packet.data.0 = 0x90
-    packet.data.1 = 48
-    packet.data.2 = 98
-    
-    var midiPacketList = MIDIPacketList(numPackets: 1, packet: packet)
-    MIDIReceived(midiOut, &midiPacketList)
+  @IBAction func onFaderLearnButtonPushed(_ sender: Any) {
+    currentLearnMode = .Fader
+    isLearnModeActive = true
+    DispatchQueue.main.async {
+      self.ibFaderLearnButton.title = "..."
+    }
   }
   
   func onMidiReceived(_ pktList:UnsafePointer<MIDIPacketList>) {
-//    if isBlindModeActive {
-//
-//    } else {
-//
-//    }
-//     MIDIReceived(midiOut, pktList)
-    
       let packetList:MIDIPacketList = pktList.pointee
       var packet:MIDIPacket = packetList.packet
       for _ in 1...packetList.numPackets
@@ -125,18 +119,12 @@ class ViewController: NSViewController {
         let bytes = Mirror(reflecting: packet.data).children
         var midi = [UInt8]()
 
-        // bytes mirror contains all the zero values in the ridiulous packet data tuple
-        // so use the packet length to iterate.
         var i = packet.length
         for (_, attr) in bytes.enumerated()
         {
           midi.append(attr.value as! UInt8)
-//          dumpStr += "\() "
           i -= 1
-          if (i <= 0)
-          {
-            break
-          }
+          if i <= 0 { break }
         }
 
         handleMidi(midi)
@@ -146,16 +134,58 @@ class ViewController: NSViewController {
   
   func handleMidi(_ midi:[UInt8]) {
     var i = 0
+    // cycle through multiple messages
     while i < midi.count - 2 {
-//      var command = midi[i]
+      // store command values
       let v1 = midi[i]
       let v2 = midi[i+1]
       let v3 = midi[i+2]
+      
+      if isLearnModeActive {
+        
+        switch currentLearnMode {
+          case .Fader:
+            // get values
+            blindModeFaderChannel = v1
+            blindModeFaderCC = v2
+            // save in user defaults
+            let defaults = UserDefaults.standard
+            defaults.set(blindModeFaderChannel, forKey: "blindModeFaderChannel")
+            defaults.set(blindModeFaderCC, forKey: "blindModeFaderCC")
+            // show in interface
+            DispatchQueue.main.async {
+              self.ibBlindFaderField.stringValue = "\(v1 - 175)/\(v2)"
+              self.ibFaderLearnButton.title = "Learn"
+            }
+          case .Toggle:
+            // get values
+            blindModeToggleChannel = v1
+            blindModeToggleCC = v2
+            // save in user defaults
+            let defaults = UserDefaults.standard
+            defaults.set(blindModeToggleChannel, forKey: "blindModeToggleChannel")
+            defaults.set(blindModeToggleCC, forKey: "blindModeToggleCC")
+            // show in interface
+            DispatchQueue.main.async {
+              self.ibBlindToggleField.stringValue = "\(v1 - 175)/\(v2)"
+              self.ibToggleLearnButton.title = "Learn"
+            }
+          case .None:
+            break
+        }
+        // finish learning session
+        isLearnModeActive = false
+        currentLearnMode = .None
+        return
+      }
+      
       switch (v1, v2) {
+        
+        // Blind mode Toggle CC
         case (blindModeToggleChannel, blindModeToggleCC) :
           isBlindModeActive = v3 > 0
           DispatchQueue.main.async {
-            self.ibBlindBox.state = self.isBlindModeActive ? NSButton.StateValue.on : NSButton.StateValue.off
+            self.ibEyeImage.alphaValue = self.isBlindModeActive ? 1 : 0.5
           }
           if !isBlindModeActive {
             for (id, value) in blindValues {
@@ -164,6 +194,8 @@ class ViewController: NSViewController {
             }
             blindValues.removeAll()
           }
+        
+        // Blind mode Fader CC
         case (blindModeFaderChannel, blindModeFaderCC):
           if isBlindModeActive {
             for (id, value) in blindValues {
@@ -172,12 +204,15 @@ class ViewController: NSViewController {
               }
             }
           }
+          DispatchQueue.main.async {
+              self.ibProgressFader.doubleValue = Double(v3) / 127
+          }
         
+        // Other actions
         default:
           let values = (v1, v2, v3)
           if isBlindModeActive {
             blindValues["\(v1)-\(v2)"] = values
-//            print("MIDI IN : \(values)")
           } else {
             lastValues["\(v1)-\(v2)"] = values
             send(values)
@@ -189,7 +224,7 @@ class ViewController: NSViewController {
   }
   
   func mix(_ lastValues:(UInt8, UInt8, UInt8), with blindValues:(UInt8, UInt8, UInt8), q:UInt8) {
-    let mixFactor = Float(q) / 128
+    let mixFactor = Float(q) / 127
     let mixValue = UInt8( Float(lastValues.2) * (1 - mixFactor) + Float(blindValues.2) * mixFactor)
     send((lastValues.0, lastValues.1, mixValue))
   }
@@ -198,7 +233,6 @@ class ViewController: NSViewController {
     var packet = MIDIPacket()
     packet.timeStamp = 0
     packet.length = 3
-    // packet.data = midiDataTuple
     packet.data.0 = values.0
     packet.data.1 = values.1
     packet.data.2 = values.2
@@ -230,6 +264,7 @@ extension ViewController: NSTableViewDelegate {
   }
   
   func tableViewSelectionDidChange(_ notification: Notification) {
+    // TODO: use selection to really listen to midi sources
     for i in ibMidiSourcesTableView.selectedRowIndexes {
       print("Should listen to \(midiSourceNames[i])")
     }
