@@ -14,8 +14,35 @@ var midiListener:ViewController?
 func MyMIDIReadProc(pktList: UnsafePointer<MIDIPacketList>,
                     readProcRefCon: UnsafeMutableRawPointer?, srcConnRefCon: UnsafeMutableRawPointer?) -> Void
 {
-
   midiListener?.onMidiReceived(pktList)
+}
+
+func MyMIDIStateChangedHander(notification:UnsafePointer<MIDINotification>, rawPointer:UnsafeMutableRawPointer?) -> Void {
+  if notification.pointee.messageID == .msgSetupChanged {
+    midiListener?.refreshMidiInputList()
+  }
+  /*
+   // keep complete version for future needs
+  switch notification.pointee.messageID {
+  case .msgObjectAdded:
+    print("object added")
+//    midiListener?.refreshMidiInputList()
+  case .msgObjectRemoved:
+    print("object removed")
+//    midiListener?.refreshMidiInputList()
+    case .msgPropertyChanged:
+      print("property changed")
+    case .msgSetupChanged:
+      print("setup changed")
+      midiListener?.refreshMidiInputList()
+    case .msgIOError:
+      print("io error")
+    case .msgThruConnectionsChanged:
+      print("thru connections changed")
+    case .msgSerialPortOwnerChanged:
+      print("Serial port owner changed")
+  }
+  */
 }
 
 class ViewController: NSViewController {
@@ -64,7 +91,7 @@ class ViewController: NSViewController {
     
     // create virtual client, source and port
     midiListener = self
-    MIDIClientCreate(clientName as CFString, nil, nil, &midiClient)
+    MIDIClientCreate(clientName as CFString, MyMIDIStateChangedHander, nil, &midiClient)
     MIDISourceCreate(midiClient, clientName as CFString, &midiOut)
     MIDIInputPortCreate(midiClient, clientName as CFString, MyMIDIReadProc, nil, &midiIn)
     
@@ -92,6 +119,7 @@ class ViewController: NSViewController {
   }
   
   func refreshMidiInputList() {
+    midiSourceNames = getSourceNames()
     ibMidiSourcesTableView.reloadData()
   }
 
@@ -312,6 +340,7 @@ extension ViewController {
       if (endpoint != 0)
       {
         let name = getDisplayName(endpoint)
+        print("INPUT : \(name)")
         if name != clientName {
           names.append(name);
         }

@@ -708,11 +708,11 @@
             <objects>
                 <viewController id="XfG-lQ-9wD" customClass="ViewController" customModule="BlindMIDI" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="m2S-Jp-Qdl">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="380"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="220"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="yoU-MY-A6V">
-                                <rect key="frame" x="18" y="343" width="291" height="17"/>
+                                <rect key="frame" x="18" y="183" width="291" height="17"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="MIDI Inputs" id="83T-sj-ljt">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -720,13 +720,13 @@
                                 </textFieldCell>
                             </textField>
                             <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lTg-ct-pTa" userLabel="INPUT LIST">
-                                <rect key="frame" x="20" y="20" width="289" height="315"/>
+                                <rect key="frame" x="20" y="20" width="289" height="155"/>
                                 <clipView key="contentView" id="Mle-dY-lfW">
-                                    <rect key="frame" x="1" y="1" width="287" height="313"/>
+                                    <rect key="frame" x="1" y="1" width="287" height="153"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" autosaveColumns="NO" rowSizeStyle="automatic" viewBased="YES" id="ozB-0n-XBs">
-                                            <rect key="frame" x="0.0" y="0.0" width="287" height="313"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="287" height="153"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <size key="intercellSpacing" width="3" height="2"/>
                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -782,7 +782,7 @@
                                 </scroller>
                             </scrollView>
                             <stackView distribution="equalSpacing" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pQ8-hb-6G2" userLabel="RIGHT STACK">
-                                <rect key="frame" x="328" y="219.5" width="252" height="140"/>
+                                <rect key="frame" x="328" y="59.5" width="252" height="140"/>
                                 <subviews>
                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="LR4-fg-O6l">
                                         <rect key="frame" x="0.0" y="84" width="252" height="56"/>
