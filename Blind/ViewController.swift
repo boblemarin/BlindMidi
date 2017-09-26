@@ -63,6 +63,7 @@ class ViewController: NSViewController {
   
   let clientName = "BlindMIDI"
   var midiSourceNames = [String]()
+  var activeSouceNames = [String]()
   var midiClient:MIDIClientRef = 0
   var midiOut:MIDIEndpointRef = 0
   var midiIn:MIDIPortRef = 0
@@ -283,6 +284,7 @@ extension ViewController: NSTableViewDelegate {
 
 
     let CellID = NSUserInterfaceItemIdentifier(rawValue: "NameCellID")
+    let checkCellID = NSUserInterfaceItemIdentifier(rawValue: "CheckCellID")
     
     if let cell = ibMidiSourcesTableView.makeView(withIdentifier: CellID, owner: nil) as? NSTableCellView {
       cell.textField?.stringValue = midiSourceNames[row]
@@ -340,7 +342,7 @@ extension ViewController {
       if (endpoint != 0)
       {
         let name = getDisplayName(endpoint)
-        print("INPUT : \(name)")
+//        print("INPUT : \(name)")
         if name != clientName {
           names.append(name);
         }
@@ -355,6 +357,14 @@ extension ViewController {
   func listenTo( _ i:Int ) {
     var src = MIDIGetSource(i)
     MIDIPortConnectSource(midiIn, src, &src)
+
   }
+  
+  func stopListeningTo( _ i:Int ) {
+    var src = MIDIGetSource(i)
+    MIDIPortDisconnectSource(midiIn, src)
+  }
+  
+  
 
 }
