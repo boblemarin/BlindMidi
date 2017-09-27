@@ -45,6 +45,12 @@ func MyMIDIStateChangedHander(notification:UnsafePointer<MIDINotification>, rawP
   */
 }
 
+class MidiSource {
+  var name:String = ""
+  var hash:Int = 0
+  var listening:Bool = false
+}
+
 class ViewController: NSViewController {
  
   enum LearnMode {
@@ -62,8 +68,8 @@ class ViewController: NSViewController {
   @IBOutlet weak var ibProgressFader: NSProgressIndicator!
   
   let clientName = "BlindMIDI"
-  var midiSourceNames = [String]()
-  var activeSouceNames = [String]()
+  var midiSources = [MidiSource]()
+//  var activeSouceNames = [String]()
   var midiClient:MIDIClientRef = 0
   var midiOut:MIDIEndpointRef = 0
   var midiIn:MIDIPortRef = 0
@@ -97,7 +103,7 @@ class ViewController: NSViewController {
     MIDIInputPortCreate(midiClient, clientName as CFString, MyMIDIReadProc, nil, &midiIn)
     
     // get source names
-    midiSourceNames = getSourceNames()
+    midiSources = getSources()
     
     // configure table view
     ibMidiSourcesTableView.delegate = self
@@ -120,7 +126,7 @@ class ViewController: NSViewController {
   }
   
   func refreshMidiInputList() {
-    midiSourceNames = getSourceNames()
+    midiSources = getSources()
     ibMidiSourcesTableView.reloadData()
   }
 
@@ -275,7 +281,7 @@ class ViewController: NSViewController {
 
 extension ViewController: NSTableViewDataSource {
   func numberOfRows(in tableView: NSTableView) -> Int {
-    return midiSourceNames.count
+    return midiSources.count
   }
 }
 
@@ -290,15 +296,14 @@ extension ViewController: NSTableViewDelegate {
       if let cell = ibMidiSourcesTableView.makeView(withIdentifier: checkCellID, owner: nil) as? NSTableCellView {
 //        cel
         if let box = cell.subviews[0] as? NSButton {
-          box.state = .on
+          box.state = midiSources[row].listening ? .on : .off
         }
         return cell
       }
 
     } else if tableColumn == ibMidiSourcesTableView.tableColumns[1] {
       if let cell = ibMidiSourcesTableView.makeView(withIdentifier: CellID, owner: nil) as? NSTableCellView {
-        cell.imageView?.image = #imageLiteral(resourceName: "midiEye")
-        cell.textField?.stringValue = midiSourceNames[row]
+        cell.textField?.stringValue = midiSources[row].name
         return cell
       }
     }
@@ -309,7 +314,7 @@ extension ViewController: NSTableViewDelegate {
   func tableViewSelectionDidChange(_ notification: Notification) {
     // TODO: use selection to really listen to midi sources
     for i in ibMidiSourcesTableView.selectedRowIndexes {
-      print("Should listen to \(midiSourceNames[i])")
+      print("Should listen to \(midiSources[i].name)")
     }
   }
 }
@@ -329,42 +334,69 @@ extension ViewController {
     return name
   }
   
-  func getDestinationNames() -> [String]
-  {
-    var names:[String] = [];
-    
-    let count: Int = MIDIGetNumberOfDestinations();
-    for i in 0..<count {
-      let endpoint:MIDIEndpointRef = MIDIGetDestination(i);
-      
-      if (endpoint != 0)
-      {
-        names.append(getDisplayName(endpoint));
-      }
-    }
-    return names;
-  }
+//  func getDestinationNames() -> [String]
+//  {
+//    var names:[String] = [];
+//
+//    let count: Int = MIDIGetNumberOfDestinations();
+//    for i in 0..<count {
+//      let endpoint:MIDIEndpointRef = MIDIGetDestination(i);
+//
+//      if (endpoint != 0)
+//      {
+//        names.append(getDisplayName(endpoint));
+//      }
+//    }
+//    return names;
+//  }
+//
+//  func getSourceNames() -> [String]
+//  {
+//    var names:[String] = [];
+//
+//    let count: Int = MIDIGetNumberOfSources();
+//    for i in 0..<count {
+//      let endpoint:MIDIEndpointRef = MIDIGetSource(i);
+//      if (endpoint != 0)
+//      {
+//        let name = getDisplayName(endpoint)
+//        if name != clientName {
+//          names.append(name);
+//        }
+//        if name == "Midi Fighter Twister" {
+//          listenTo(i)
+//        }
+//      }
+//    }
+//    return names;
+//  }
   
-  func getSourceNames() -> [String]
+  func getSources() -> [MidiSource]
   {
-    var names:[String] = [];
-    
-    let count: Int = MIDIGetNumberOfSources();
+    var sources = [MidiSource]()
+    let count = MIDIGetNumberOfSources()
     for i in 0..<count {
-      let endpoint:MIDIEndpointRef = MIDIGetSource(i);
-      if (endpoint != 0)
-      {
+      let endpoint = MIDIGetSource(i)
+      if endpoint != 0 {
         let name = getDisplayName(endpoint)
         if name != clientName {
-          names.append(name);
-        }
-        if name == "Midi Fighter Twister" {
-          listenTo(i)
+          let src = MidiSource()
+          src.name = name
+          src.hash = endpoint.hashValue
+          if name == "Midi Fighter Twister" {
+            listenTo(i)
+            src.listening = true
+          } else {
+            src.listening = false
+          }
+          sources.append(src)
         }
       }
     }
-    return names;
+    return sources
   }
+  
+
   
   func listenTo( _ i:Int ) {
     var src = MIDIGetSource(i)
@@ -373,7 +405,7 @@ extension ViewController {
   }
   
   func stopListeningTo( _ i:Int ) {
-    var src = MIDIGetSource(i)
+    let src = MIDIGetSource(i)
     MIDIPortDisconnectSource(midiIn, src)
   }
   
