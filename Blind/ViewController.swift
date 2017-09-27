@@ -286,10 +286,23 @@ extension ViewController: NSTableViewDelegate {
     let CellID = NSUserInterfaceItemIdentifier(rawValue: "NameCellID")
     let checkCellID = NSUserInterfaceItemIdentifier(rawValue: "CheckCellID")
     
-    if let cell = ibMidiSourcesTableView.makeView(withIdentifier: CellID, owner: nil) as? NSTableCellView {
-      cell.textField?.stringValue = midiSourceNames[row]
-      return cell
+    if tableColumn == ibMidiSourcesTableView.tableColumns[0] {
+      if let cell = ibMidiSourcesTableView.makeView(withIdentifier: checkCellID, owner: nil) as? NSTableCellView {
+//        cel
+        if let box = cell.subviews[0] as? NSButton {
+          box.state = .on
+        }
+        return cell
+      }
+
+    } else if tableColumn == ibMidiSourcesTableView.tableColumns[1] {
+      if let cell = ibMidiSourcesTableView.makeView(withIdentifier: CellID, owner: nil) as? NSTableCellView {
+        cell.imageView?.image = #imageLiteral(resourceName: "midiEye")
+        cell.textField?.stringValue = midiSourceNames[row]
+        return cell
+      }
     }
+
     return nil
   }
   
@@ -342,7 +355,6 @@ extension ViewController {
       if (endpoint != 0)
       {
         let name = getDisplayName(endpoint)
-//        print("INPUT : \(name)")
         if name != clientName {
           names.append(name);
         }
