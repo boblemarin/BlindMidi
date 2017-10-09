@@ -306,7 +306,13 @@ extension ViewController: NSTableViewDelegate {
       let selected = myTable.selectedRowIndexes.map { Int($0) }
       print(selected)
       for i in selected {
-        midiSources[i].listening = !midiSources[i].listening
+        let listening = !midiSources[i].listening
+        midiSources[i].listening = listening
+        if listening {
+          listenTo(i)
+        } else {
+          stopListeningTo(i)
+        }
       }
       
       ibMidiSourcesTableView.reloadData()
