@@ -287,34 +287,29 @@ extension ViewController: NSTableViewDataSource {
 
 extension ViewController: NSTableViewDelegate {
   func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-
-
-    let CellID = NSUserInterfaceItemIdentifier(rawValue: "NameCellID")
-    let checkCellID = NSUserInterfaceItemIdentifier(rawValue: "CheckCellID")
-    
-    if tableColumn == ibMidiSourcesTableView.tableColumns[0] {
-      if let cell = ibMidiSourcesTableView.makeView(withIdentifier: checkCellID, owner: nil) as? NSTableCellView {
-//        cel
-        if let box = cell.subviews[0] as? NSButton {
-          box.state = midiSources[row].listening ? .on : .off
-        }
-        return cell
-      }
-
-    } else if tableColumn == ibMidiSourcesTableView.tableColumns[1] {
-      if let cell = ibMidiSourcesTableView.makeView(withIdentifier: CellID, owner: nil) as? NSTableCellView {
-        cell.textField?.stringValue = midiSources[row].name
-        return cell
-      }
+    guard let columnID = tableColumn?.identifier else{
+      return nil
     }
-
+    
+    let ucell = ibMidiSourcesTableView.makeView(withIdentifier: columnID, owner: nil)
+    if let cell = ucell as? NSTableCellView {
+      cell.textField?.stringValue = midiSources[row].name
+      cell.imageView?.image = NSImage(named: NSImage.Name(rawValue: midiSources[row].listening ? "checkbox_on" : "checkbox_off"))
+      //        cell.imageView?.image = NSImage(named: "checkbox_off")
+      return cell
+    }
     return nil
   }
   
   func tableViewSelectionDidChange(_ notification: Notification) {
-    // TODO: use selection to really listen to midi sources
-    for i in ibMidiSourcesTableView.selectedRowIndexes {
-      print("Should listen to \(midiSources[i].name)")
+    if let myTable = notification.object as? NSTableView {
+      let selected = myTable.selectedRowIndexes.map { Int($0) }
+      print(selected)
+      for i in selected {
+        midiSources[i].listening = !midiSources[i].listening
+      }
+      
+      ibMidiSourcesTableView.reloadData()
     }
   }
 }
