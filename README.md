@@ -1,7 +1,6 @@
-# BlindMidi
-
 ![Logo](https://github.com/boblemarin/BlindMidi/raw/master/Icon/eye.png)
 
+# BlindMidi
 This is an alpha version of an ongoing project, use it at your own risks.
 
 # Setup instructions
