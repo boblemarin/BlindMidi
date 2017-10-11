@@ -3,6 +3,7 @@
 
 
 # Setup instructions
+- download BlindMidi from [the releases page](https://github.com/boblemarin/BlindMidi/releases)
 - connect midi controllers
 - disable them in Ableton Live
 - launch BlindMidi app
