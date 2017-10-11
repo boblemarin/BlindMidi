@@ -15,7 +15,7 @@ This is an alpha version of an ongoing project, use it at your own risks.
 - Enjoy
 
 # Usage
-
+[![Quick demo](http://img.youtube.com/vi/FDkeD8RQInY/0.jpg)](http://www.youtube.com/watch?v=FDkeD8RQInY)
 
 # Known bugs and limitations
 - When blind mode is turned off, the final value is applied regardless of the fader position. waiting for feedback before changing that.
