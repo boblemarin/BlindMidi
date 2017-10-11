@@ -14,8 +14,10 @@ This is an alpha version of an ongoing project, use it at your own risks.
 - Use the Learn button to map midi CCs to Toggle and Fade functions
 - Enjoy
 
-# Usage
-[![Quick demo](http://img.youtube.com/vi/K07Ok3IM4A8/0.jpg)](http://www.youtube.com/watch?v=K07Ok3IM4A8)
+# Demo video
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=K07Ok3IM4A8
+" target="_blank"><img src="http://img.youtube.com/vi/K07Ok3IM4A8/0.jpg" 
+alt="Quick demo video" width="240" height="180" border="10" /></a> 
 
 # Known bugs and limitations
 - When blind mode is turned off, the final value is applied regardless of the fader position. waiting for feedback before changing that.
