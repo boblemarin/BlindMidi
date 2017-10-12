@@ -93,7 +93,7 @@ class ViewController: NSViewController {
     blindModeToggleCC = UInt8(defaults.integer(forKey: "blindModeToggleCC"))
     blindModeFaderChannel = UInt8(defaults.integer(forKey: "blindModeFaderChannel"))
     blindModeFaderCC = UInt8(defaults.integer(forKey: "blindModeFaderCC"))
-    
+
     ibEyeImage.alphaValue = 0.5
     
     // create virtual client, source and port
@@ -111,11 +111,13 @@ class ViewController: NSViewController {
   }
   
   override func viewWillAppear() {
-    
+    super.viewWillAppear()
     // show toggle and fader cc values
+    let toggleValue = blindModeToggleChannel > 174 ? "\(blindModeToggleChannel - 175)/\(self.blindModeToggleCC)" : ""
+    let faderValue = blindModeToggleChannel > 174 ? "\(self.blindModeFaderChannel - 175)/\(self.blindModeFaderCC)" : ""
     DispatchQueue.main.async {
-      self.ibBlindToggleField.stringValue = "\(self.blindModeToggleChannel - 175)/\(self.blindModeToggleCC)"
-      self.ibBlindFaderField.stringValue = "\(self.blindModeFaderChannel - 175)/\(self.blindModeFaderCC)"
+      self.ibBlindToggleField.stringValue = toggleValue
+      self.ibBlindFaderField.stringValue = faderValue
     }
   }
 
