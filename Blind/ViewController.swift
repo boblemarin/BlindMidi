@@ -68,11 +68,12 @@ class ViewController: NSViewController {
   @IBOutlet weak var ibProgressFader: NSProgressIndicator!
   
   let clientName = "BlindMIDI"
-  var midiSources = [MidiSource]()
-//  var activeSouceNames = [String]()
   var midiClient:MIDIClientRef = 0
   var midiOut:MIDIEndpointRef = 0
   var midiIn:MIDIPortRef = 0
+  var midiSources:[MidiSource]!
+  var connectedMidiSources = [Int]()
+  var previousMidiSources:[Int]!
   
   var isLearnModeActive = false
   var currentLearnMode:LearnMode = .None
@@ -93,8 +94,7 @@ class ViewController: NSViewController {
     blindModeToggleCC = UInt8(defaults.integer(forKey: "blindModeToggleCC"))
     blindModeFaderChannel = UInt8(defaults.integer(forKey: "blindModeFaderChannel"))
     blindModeFaderCC = UInt8(defaults.integer(forKey: "blindModeFaderCC"))
-
-    ibEyeImage.alphaValue = 0.5
+    
     
     // create virtual client, source and port
     midiListener = self
@@ -103,11 +103,24 @@ class ViewController: NSViewController {
     MIDIInputPortCreate(midiClient, clientName as CFString, MyMIDIReadProc, nil, &midiIn)
     
     // get source names
+    previousMidiSources = defaults.array(forKey: "previousMidiSources") as? [Int] ?? []
     midiSources = getSources()
+    
+    for (i, source) in midiSources.enumerated() {
+      if previousMidiSources.contains(source.hash) {
+        listenTo(i)
+        connectedMidiSources.append(source.hash)
+        midiSources[i].listening = true
+      }
+    }
+    
+    print("Connected sources : \(connectedMidiSources)")
+    print("Previous sources : \(previousMidiSources)")
     
     // configure table view
     ibMidiSourcesTableView.delegate = self
     ibMidiSourcesTableView.dataSource = self
+    ibEyeImage.alphaValue = 0.5
   }
   
   override func viewWillAppear() {
@@ -120,15 +133,26 @@ class ViewController: NSViewController {
       self.ibBlindFaderField.stringValue = faderValue
     }
   }
-
-  override var representedObject: Any? {
-    didSet {
-    // Update the view, if already loaded.
-    }
+  
+  override func viewWillDisappear() {
+    super.viewWillDisappear()
+    
+    UserDefaults.standard.set(previousMidiSources, forKey: "previousMidiSources")
   }
   
   func refreshMidiInputList() {
     midiSources = getSources()
+    for (i, source) in midiSources.enumerated() {
+      if connectedMidiSources.contains(source.hash) {
+        // already connected, mark as appropriate
+        midiSources[i].listening = true
+      } else if previousMidiSources.contains(source.hash) {
+        // source has come back, connect and store
+        connectedMidiSources.append(source.hash)
+        midiSources[i].listening = true
+        listenTo(i)
+      }
+    }
     ibMidiSourcesTableView.reloadData()
   }
 
@@ -280,7 +304,6 @@ class ViewController: NSViewController {
   
 }
 
-
 extension ViewController: NSTableViewDataSource {
   func numberOfRows(in tableView: NSTableView) -> Int {
     return midiSources.count
@@ -306,17 +329,28 @@ extension ViewController: NSTableViewDelegate {
   func tableViewSelectionDidChange(_ notification: Notification) {
     if let myTable = notification.object as? NSTableView {
       let selected = myTable.selectedRowIndexes.map { Int($0) }
-      print(selected)
       for i in selected {
         let listening = !midiSources[i].listening
         midiSources[i].listening = listening
+        let hash = midiSources[i].hash
         if listening {
           listenTo(i)
+          connectedMidiSources.append(hash)
+          if !previousMidiSources.contains(hash) {
+            previousMidiSources.append(hash)
+          }
         } else {
           stopListeningTo(i)
+          if let index = connectedMidiSources.index(of: hash) {
+            connectedMidiSources.remove(at: index)
+          }
+          if let index = previousMidiSources.index(of: hash) {
+            previousMidiSources.remove(at: index)
+          }
         }
       }
-      
+      print("Connected sources : \(connectedMidiSources)")
+      print("Previous sources : \(previousMidiSources)")
       ibMidiSourcesTableView.reloadData()
     }
   }
@@ -352,27 +386,6 @@ extension ViewController {
 //    }
 //    return names;
 //  }
-//
-//  func getSourceNames() -> [String]
-//  {
-//    var names:[String] = [];
-//
-//    let count: Int = MIDIGetNumberOfSources();
-//    for i in 0..<count {
-//      let endpoint:MIDIEndpointRef = MIDIGetSource(i);
-//      if (endpoint != 0)
-//      {
-//        let name = getDisplayName(endpoint)
-//        if name != clientName {
-//          names.append(name);
-//        }
-//        if name == "Midi Fighter Twister" {
-//          listenTo(i)
-//        }
-//      }
-//    }
-//    return names;
-//  }
   
   func getSources() -> [MidiSource]
   {
@@ -386,12 +399,6 @@ extension ViewController {
           let src = MidiSource()
           src.name = name
           src.hash = endpoint.hashValue
-          if name == "Midi Fighter Twister" {
-            listenTo(i)
-            src.listening = true
-          } else {
-            src.listening = false
-          }
           sources.append(src)
         }
       }
