@@ -56,15 +56,22 @@ class ViewController: NSViewController {
   enum LearnMode {
     case Toggle
     case Fader
+    case Auto
     case None
   }
   
   @IBOutlet weak var ibEyeImage: NSImageView!
   @IBOutlet weak var ibMidiSourcesTableView: NSTableView!
+  
   @IBOutlet weak var ibBlindToggleField: NSTextField!
   @IBOutlet weak var ibToggleLearnButton: NSButton!
+  
   @IBOutlet weak var ibBlindFaderField: NSTextField!
   @IBOutlet weak var ibFaderLearnButton: NSButton!
+  
+  @IBOutlet weak var ibBlindAutoField: NSTextField!
+  @IBOutlet weak var ibAutoLearnButton: NSButton!
+  
   @IBOutlet weak var ibProgressFader: NSProgressIndicator!
   
   let clientName = "BlindMIDI"
@@ -82,6 +89,9 @@ class ViewController: NSViewController {
   var blindModeToggleCC:UInt8 = 15
   var blindModeFaderChannel:UInt8 = 176
   var blindModeFaderCC:UInt8 = 15
+  
+  var blindModeAutoChannel:UInt8 = 176
+  var blindModeAutoCC:UInt8 = 16
   var lastValues = [String:(UInt8,UInt8,UInt8)]()
   var blindValues = [String:(UInt8,UInt8,UInt8)]()
   
@@ -94,7 +104,8 @@ class ViewController: NSViewController {
     blindModeToggleCC = UInt8(defaults.integer(forKey: "blindModeToggleCC"))
     blindModeFaderChannel = UInt8(defaults.integer(forKey: "blindModeFaderChannel"))
     blindModeFaderCC = UInt8(defaults.integer(forKey: "blindModeFaderCC"))
-    
+    blindModeAutoChannel = UInt8(defaults.integer(forKey: "blindModeAutoChannel"))
+    blindModeAutoCC = UInt8(defaults.integer(forKey: "blindModeAutoCC"))
     
     // create virtual client, source and port
     midiListener = self
@@ -127,10 +138,12 @@ class ViewController: NSViewController {
     super.viewWillAppear()
     // show toggle and fader cc values
     let toggleValue = blindModeToggleChannel > 174 ? "\(blindModeToggleChannel - 175)/\(self.blindModeToggleCC)" : ""
-    let faderValue = blindModeToggleChannel > 174 ? "\(self.blindModeFaderChannel - 175)/\(self.blindModeFaderCC)" : ""
+    let faderValue = blindModeToggleChannel > 174 ? "\(blindModeFaderChannel - 175)/\(self.blindModeFaderCC)" : ""
+    let autoValue = blindModeAutoChannel > 174 ? "\(blindModeAutoChannel - 175)/\(self.blindModeAutoCC)" : ""
     DispatchQueue.main.async {
       self.ibBlindToggleField.stringValue = toggleValue
       self.ibBlindFaderField.stringValue = faderValue
+      self.ibBlindAutoField.stringValue = autoValue
     }
   }
   
@@ -172,6 +185,14 @@ class ViewController: NSViewController {
     }
   }
   
+  @IBAction func onAutoLearnButtonPushed(_ sender: Any) {
+    currentLearnMode = .Auto
+    isLearnModeActive = true
+    DispatchQueue.main.async {
+      self.ibAutoLearnButton.title = "..."
+    }
+  }
+  
   func onMidiReceived(_ pktList:UnsafePointer<MIDIPacketList>) {
       let packetList:MIDIPacketList = pktList.pointee
       var packet:MIDIPacket = packetList.packet
@@ -202,9 +223,11 @@ class ViewController: NSViewController {
       let v2 = midi[i+1]
       let v3 = midi[i+2]
       
-      if isLearnModeActive {
-        
-        switch currentLearnMode {
+      if (v1 & 0xF0) == 0xB0 { // this is a CC message}
+      
+        if isLearnModeActive {
+          
+          switch currentLearnMode {
           case .Fader:
             // get values
             blindModeFaderChannel = v1
@@ -231,17 +254,30 @@ class ViewController: NSViewController {
               self.ibBlindToggleField.stringValue = "\(v1 - 175)/\(v2)"
               self.ibToggleLearnButton.title = "Learn"
             }
+          case .Auto:
+            // get values
+            blindModeAutoChannel = v1
+            blindModeAutoCC = v2
+            // save in user defaults
+            let defaults = UserDefaults.standard
+            defaults.set(blindModeAutoChannel, forKey: "blindModeAutoChannel")
+            defaults.set(blindModeAutoCC, forKey: "blindModeAutoCC")
+            // show in interface
+            DispatchQueue.main.async {
+              self.ibBlindAutoField.stringValue = "\(v1 - 175)/\(v2)"
+              self.ibAutoLearnButton.title = "Learn"
+            }
           case .None:
             break
+          }
+          // finish learning session
+          isLearnModeActive = false
+          currentLearnMode = .None
+          return
         }
-        // finish learning session
-        isLearnModeActive = false
-        currentLearnMode = .None
-        return
-      }
-      
-      switch (v1, v2) {
         
+        switch (v1, v2) {
+          
         // Blind mode Toggle CC
         case (blindModeToggleChannel, blindModeToggleCC) :
           isBlindModeActive = v3 > 0
@@ -255,7 +291,7 @@ class ViewController: NSViewController {
             }
             blindValues.removeAll()
           }
-        
+          
         // Blind mode Fader CC
         case (blindModeFaderChannel, blindModeFaderCC):
           if isBlindModeActive {
@@ -266,9 +302,13 @@ class ViewController: NSViewController {
             }
           }
           DispatchQueue.main.async {
-              self.ibProgressFader.doubleValue = Double(v3) / 127
+            self.ibProgressFader.doubleValue = Double(v3) / 127
           }
-        
+          
+        case (blindModeAutoChannel, blindModeAutoCC):
+          // TODO: start timer and move parameters
+          print("starting automatic parameters transition")
+          
         // Other actions
         default:
           let values = (v1, v2, v3)
@@ -278,8 +318,12 @@ class ViewController: NSViewController {
             lastValues["\(v1)-\(v2)"] = values
             send(values)
           }
+        }
+      } else {
+        // passthrough for non-CC messages
+        let values = (v1, v2, v3)
+        send(values)
       }
-      
       i += 3
     }
   }
