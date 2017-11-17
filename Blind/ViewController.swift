@@ -17,6 +17,13 @@ func MyMIDIReadProc(pktList: UnsafePointer<MIDIPacketList>,
   midiListener?.onMidiReceived(pktList)
 }
 
+func MyVRMIDIReadProc(pktList: UnsafePointer<MIDIPacketList>,
+                    readProcRefCon: UnsafeMutableRawPointer?, srcConnRefCon: UnsafeMutableRawPointer?) -> Void
+{
+  //midiListener?.onMidiReceived(pktList)
+  print("ping")
+}
+
 func MyMIDIStateChangedHander(notification:UnsafePointer<MIDINotification>, rawPointer:UnsafeMutableRawPointer?) -> Void {
   if notification.pointee.messageID == .msgSetupChanged {
     midiListener?.refreshMidiInputList()
@@ -78,6 +85,7 @@ class ViewController: NSViewController {
   var midiClient:MIDIClientRef = 0
   var midiOut:MIDIEndpointRef = 0
   var midiIn:MIDIPortRef = 0
+  var vrMidiIn = MIDIEndpointRef()
   var midiSources:[MidiSource]!
   var connectedMidiSources = [Int]()
   var previousMidiSources:[Int]!
@@ -112,6 +120,7 @@ class ViewController: NSViewController {
     MIDIClientCreate(clientName as CFString, MyMIDIStateChangedHander, nil, &midiClient)
     MIDISourceCreate(midiClient, clientName as CFString, &midiOut)
     MIDIInputPortCreate(midiClient, clientName as CFString, MyMIDIReadProc, nil, &midiIn)
+    MIDIDestinationCreate(midiClient, clientName as CFString, MyVRMIDIReadProc, nil, &vrMidiIn)
     
     // get source names
     previousMidiSources = defaults.array(forKey: "previousMidiSources") as? [Int] ?? []
