@@ -41,6 +41,9 @@ class ViewController: NSViewController {
   @IBOutlet weak var ibProgressFader: NSProgressIndicator!
   
   
+  @IBOutlet weak var ibLearView:NSView!
+  
+  
   let imgCheckOn = NSImage(named: NSImage.Name(rawValue: "checkbox_on"))
   let imgCheckOff = NSImage(named: NSImage.Name(rawValue: "checkbox_off"))
   
@@ -100,6 +103,12 @@ class ViewController: NSViewController {
   }
   
   // MARK: Actions
+  
+  @IBAction func onToggleLearnView(_ sender: Any) {
+    DispatchQueue.main.async {
+      self.ibLearView.isHidden = !self.ibLearView.isHidden
+    }
+  }
   
   @IBAction func onToggleLearnButtonPushed(_ sender: Any) {
     currentLearnMode = .Toggle
