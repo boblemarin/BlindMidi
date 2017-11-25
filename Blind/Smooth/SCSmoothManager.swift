@@ -25,5 +25,10 @@ class SCSmoothManager {
   var clockMode:SCClockMode = .internalClock
   var lastUpdate:Double = 0
   var clockTimer:Timer?
+  var running = false
+  var transitions = [SCTransition]()
+  
+  // MARK: Public
+  
   
 }

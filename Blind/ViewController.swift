@@ -252,6 +252,7 @@ extension ViewController: SCMidiDelegate {
         // passthrough for non-CC messages
         let values = (v1, v2, v3)
         self.midi.send(values)
+        // TODO: check for stored duplicates and remove them
       }
       i += 3
     }

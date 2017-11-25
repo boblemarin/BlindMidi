@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13196"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13529"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
     </dependencies>
@@ -689,8 +689,8 @@
                     <window key="window" title="Blind MIDI" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-                        <rect key="contentRect" x="196" y="240" width="500" height="300"/>
-                        <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+                        <rect key="contentRect" x="196" y="240" width="500" height="420"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
                         <connections>
                             <outlet property="delegate" destination="B8D-0N-5wS" id="98r-iN-zZc"/>
                         </connections>
@@ -707,26 +707,27 @@
         <scene sceneID="hIz-AP-VOD">
             <objects>
                 <viewController id="XfG-lQ-9wD" customClass="ViewController" customModule="BlindMIDI" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" wantsLayer="YES" misplaced="YES" id="m2S-Jp-Qdl">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="220"/>
+                    <view key="view" wantsLayer="YES" id="m2S-Jp-Qdl">
+                        <rect key="frame" x="0.0" y="0.0" width="640" height="420"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="yoU-MY-A6V">
-                                <rect key="frame" x="18" y="189" width="271" height="17"/>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yoU-MY-A6V">
+                                <rect key="frame" x="10" y="390" width="200" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="MIDI Inputs" id="83T-sj-ljt">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lTg-ct-pTa" userLabel="INPUT LIST">
-                                <rect key="frame" x="20" y="20" width="269" height="161"/>
+                            <scrollView ambiguous="YES" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lTg-ct-pTa" userLabel="INPUT LIST">
+                                <rect key="frame" x="20" y="231" width="269" height="151"/>
                                 <clipView key="contentView" id="Mle-dY-lfW">
-                                    <rect key="frame" x="1" y="1" width="267" height="159"/>
+                                    <rect key="frame" x="1" y="1" width="267" height="149"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowSizeStyle="automatic" viewBased="YES" id="ozB-0n-XBs">
-                                            <rect key="frame" x="0.0" y="0.0" width="267" height="159"/>
+                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="none" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowSizeStyle="automatic" viewBased="YES" id="ozB-0n-XBs">
+                                            <rect key="frame" x="0.0" y="0.0" width="267" height="149"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <size key="intercellSpacing" width="3" height="2"/>
                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -776,6 +777,7 @@
                                     </subviews>
                                 </clipView>
                                 <constraints>
+                                    <constraint firstAttribute="height" constant="151" id="GE9-e8-jpj"/>
                                     <constraint firstAttribute="width" constant="269" id="uaI-VA-Z5D"/>
                                 </constraints>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="0.33333333333333331" horizontal="YES" id="pwR-9S-7bu">
@@ -787,8 +789,8 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
-                            <stackView distribution="equalSpacing" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pQ8-hb-6G2" userLabel="RIGHT STACK">
-                                <rect key="frame" x="322" y="30.5" width="252" height="169"/>
+                            <stackView distribution="equalSpacing" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pQ8-hb-6G2" userLabel="RIGHT STACK">
+                                <rect key="frame" x="322" y="230.5" width="252" height="169"/>
                                 <subviews>
                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="LR4-fg-O6l">
                                         <rect key="frame" x="0.0" y="113" width="252" height="56"/>
@@ -964,18 +966,20 @@
                                     <real value="3.4028234663852886e+38"/>
                                 </customSpacing>
                             </stackView>
+                            <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3lz-UZ-oeQ" customClass="PKFunctionView" customModule="BlindMIDI" customModuleProvider="target">
+                                <rect key="frame" x="20" y="69" width="256" height="123"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            </customView>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="574-4I-o6Q">
+                                <rect key="frame" x="18" y="200" width="258" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Curve" id="vvi-um-WxD">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
                         </subviews>
-                        <constraints>
-                            <constraint firstAttribute="trailing" secondItem="pQ8-hb-6G2" secondAttribute="trailing" constant="20" id="9TI-OU-ah7"/>
-                            <constraint firstAttribute="bottom" secondItem="lTg-ct-pTa" secondAttribute="bottom" constant="20" id="OKH-SM-FIA"/>
-                            <constraint firstItem="yoU-MY-A6V" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="14" id="XXc-7y-f9i"/>
-                            <constraint firstItem="yoU-MY-A6V" firstAttribute="width" secondItem="ozB-0n-XBs" secondAttribute="width" id="YxU-Vr-mfx"/>
-                            <constraint firstItem="yoU-MY-A6V" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" id="bMF-G2-U7M"/>
-                            <constraint firstItem="lTg-ct-pTa" firstAttribute="leading" secondItem="yoU-MY-A6V" secondAttribute="leading" id="bUo-SA-imA"/>
-                            <constraint firstItem="lTg-ct-pTa" firstAttribute="top" secondItem="yoU-MY-A6V" secondAttribute="bottom" constant="8" id="r5i-Yy-4b1"/>
-                            <constraint firstItem="pQ8-hb-6G2" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="20.5" id="vWR-GX-Hwz"/>
-                            <constraint firstItem="pQ8-hb-6G2" firstAttribute="leading" secondItem="ozB-0n-XBs" secondAttribute="trailing" constant="34" id="zCR-mx-VDN"/>
-                        </constraints>
                     </view>
                     <connections>
                         <outlet property="ibAutoLearnButton" destination="k8F-eN-wcd" id="C5V-aQ-7ik"/>
@@ -991,7 +995,7 @@
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-859" y="644"/>
+            <point key="canvasLocation" x="38" y="894"/>
         </scene>
     </scenes>
     <resources>
