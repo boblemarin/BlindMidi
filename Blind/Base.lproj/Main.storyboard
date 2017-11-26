@@ -4,7 +4,6 @@
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13529"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
-        <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
     </dependencies>
     <scenes>
         <!--Application-->
@@ -789,183 +788,27 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
-                            <stackView distribution="equalSpacing" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pQ8-hb-6G2" userLabel="RIGHT STACK">
-                                <rect key="frame" x="322" y="231" width="252" height="169"/>
-                                <subviews>
-                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="LR4-fg-O6l">
-                                        <rect key="frame" x="0.0" y="113" width="252" height="56"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="56" id="FRq-ho-pfm"/>
-                                        </constraints>
-                                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="midiEye" id="giF-CR-0T0"/>
-                                    </imageView>
-                                    <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xq4-Eo-k4f">
-                                        <rect key="frame" x="0.0" y="84" width="252" height="21"/>
-                                        <subviews>
-                                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1Ty-pa-Fn1">
-                                                <rect key="frame" x="-2" y="4" width="120" height="17"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Toggle" id="KlY-NW-RRF">
-                                                    <font key="font" metaFont="system"/>
-                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
-                                            </textField>
-                                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="a5r-vr-p3i">
-                                                <rect key="frame" x="122" y="4" width="64" height="17"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="60" id="VnG-h7-OYb"/>
-                                                </constraints>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="2/15" id="c19-8w-CUB">
-                                                    <font key="font" metaFont="system"/>
-                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
-                                            </textField>
-                                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9oq-wy-Pj4">
-                                                <rect key="frame" x="186" y="-7" width="72" height="32"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="60" id="Tpo-Ti-y5e"/>
-                                                </constraints>
-                                                <buttonCell key="cell" type="push" title="Learn" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="fLZ-Cp-YRa">
-                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                    <font key="font" metaFont="system"/>
-                                                </buttonCell>
-                                                <connections>
-                                                    <action selector="onToggleLearnButtonPushed:" target="XfG-lQ-9wD" id="Mwi-M6-Vzi"/>
-                                                </connections>
-                                            </button>
-                                        </subviews>
-                                        <visibilityPriorities>
-                                            <integer value="1000"/>
-                                            <integer value="1000"/>
-                                            <integer value="1000"/>
-                                        </visibilityPriorities>
-                                        <customSpacing>
-                                            <real value="3.4028234663852886e+38"/>
-                                            <real value="3.4028234663852886e+38"/>
-                                            <real value="3.4028234663852886e+38"/>
-                                        </customSpacing>
-                                    </stackView>
-                                    <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gn4-Df-SGb">
-                                        <rect key="frame" x="0.0" y="55" width="252" height="21"/>
-                                        <subviews>
-                                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="n2R-cz-6ZB">
-                                                <rect key="frame" x="-2" y="4" width="120" height="17"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Fade" id="Ai2-tG-g9D">
-                                                    <font key="font" metaFont="system"/>
-                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
-                                            </textField>
-                                            <textField horizontalHuggingPriority="252" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dHx-5s-YDa">
-                                                <rect key="frame" x="122" y="4" width="64" height="17"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="60" id="73i-JM-Wnk"/>
-                                                </constraints>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="1/15" id="CHq-sz-Zog">
-                                                    <font key="font" metaFont="system"/>
-                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
-                                            </textField>
-                                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="iFE-2O-q3q">
-                                                <rect key="frame" x="186" y="-7" width="72" height="32"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="60" id="Od3-Qo-s5g"/>
-                                                </constraints>
-                                                <buttonCell key="cell" type="push" title="Learn" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="jfd-oa-2EM">
-                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                    <font key="font" metaFont="system"/>
-                                                </buttonCell>
-                                                <connections>
-                                                    <action selector="onFaderLearnButtonPushed:" target="XfG-lQ-9wD" id="H6c-Te-PjY"/>
-                                                </connections>
-                                            </button>
-                                        </subviews>
-                                        <visibilityPriorities>
-                                            <integer value="1000"/>
-                                            <integer value="1000"/>
-                                            <integer value="1000"/>
-                                        </visibilityPriorities>
-                                        <customSpacing>
-                                            <real value="3.4028234663852886e+38"/>
-                                            <real value="3.4028234663852886e+38"/>
-                                            <real value="3.4028234663852886e+38"/>
-                                        </customSpacing>
-                                    </stackView>
-                                    <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uan-hI-KbQ">
-                                        <rect key="frame" x="0.0" y="26" width="252" height="21"/>
-                                        <subviews>
-                                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="SbT-ae-1eC">
-                                                <rect key="frame" x="-2" y="4" width="120" height="17"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Auto" id="YxF-cz-X8s">
-                                                    <font key="font" metaFont="system"/>
-                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
-                                            </textField>
-                                            <textField horizontalHuggingPriority="252" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ki3-Z4-pQZ">
-                                                <rect key="frame" x="122" y="4" width="64" height="17"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="60" id="Vv9-dU-5Bd"/>
-                                                </constraints>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="1/15" id="VXb-jG-Ygv">
-                                                    <font key="font" metaFont="system"/>
-                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
-                                            </textField>
-                                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="k8F-eN-wcd">
-                                                <rect key="frame" x="186" y="-7" width="72" height="32"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="60" id="gE8-xD-R8h"/>
-                                                </constraints>
-                                                <buttonCell key="cell" type="push" title="Learn" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GdK-sN-5Aq">
-                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                    <font key="font" metaFont="system"/>
-                                                </buttonCell>
-                                                <connections>
-                                                    <action selector="onAutoLearnButtonPushed:" target="XfG-lQ-9wD" id="DyF-EQ-H0J"/>
-                                                </connections>
-                                            </button>
-                                        </subviews>
-                                        <visibilityPriorities>
-                                            <integer value="1000"/>
-                                            <integer value="1000"/>
-                                            <integer value="1000"/>
-                                        </visibilityPriorities>
-                                        <customSpacing>
-                                            <real value="3.4028234663852886e+38"/>
-                                            <real value="3.4028234663852886e+38"/>
-                                            <real value="3.4028234663852886e+38"/>
-                                        </customSpacing>
-                                    </stackView>
-                                    <progressIndicator wantsLayer="YES" maxValue="1" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="xmM-Xe-JBb">
-                                        <rect key="frame" x="0.0" y="-1" width="252" height="20"/>
-                                    </progressIndicator>
-                                </subviews>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LR4-fg-O6l">
+                                <rect key="frame" x="363" y="315" width="165" height="68"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="252" id="E6R-Xp-MIU"/>
-                                    <constraint firstItem="xmM-Xe-JBb" firstAttribute="width" secondItem="pQ8-hb-6G2" secondAttribute="width" id="R3n-cH-apa"/>
-                                    <constraint firstItem="xq4-Eo-k4f" firstAttribute="width" secondItem="pQ8-hb-6G2" secondAttribute="width" id="er7-73-RwM"/>
-                                    <constraint firstItem="uan-hI-KbQ" firstAttribute="width" secondItem="gn4-Df-SGb" secondAttribute="width" id="o4e-HT-FY6"/>
-                                    <constraint firstItem="gn4-Df-SGb" firstAttribute="width" secondItem="xq4-Eo-k4f" secondAttribute="width" id="wgC-Tr-bUv"/>
+                                    <constraint firstAttribute="height" constant="56" id="FRq-ho-pfm"/>
+                                    <constraint firstAttribute="width" constant="165" id="fpe-vd-2an"/>
                                 </constraints>
-                                <visibilityPriorities>
-                                    <integer value="1000"/>
-                                    <integer value="1000"/>
-                                    <integer value="1000"/>
-                                    <integer value="1000"/>
-                                    <integer value="1000"/>
-                                </visibilityPriorities>
-                                <customSpacing>
-                                    <real value="3.4028234663852886e+38"/>
-                                    <real value="3.4028234663852886e+38"/>
-                                    <real value="3.4028234663852886e+38"/>
-                                    <real value="3.4028234663852886e+38"/>
-                                    <real value="3.4028234663852886e+38"/>
-                                </customSpacing>
-                            </stackView>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="midiEye" id="giF-CR-0T0"/>
+                            </imageView>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="n2R-cz-6ZB">
+                                <rect key="frame" x="322" y="276" width="34" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Fade" id="Ai2-tG-g9D">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <progressIndicator wantsLayer="YES" fixedFrame="YES" maxValue="1" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="xmM-Xe-JBb">
+                                <rect key="frame" x="324" y="250" width="252" height="20"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            </progressIndicator>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="574-4I-o6Q">
                                 <rect key="frame" x="10" y="206" width="177" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -989,7 +832,7 @@
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="M61-z4-YGf">
-                                <rect key="frame" x="213" y="75" width="177" height="123"/>
+                                <rect key="frame" x="213" y="75" width="177" height="87"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Duration" id="uCN-Ei-h42">
                                     <font key="font" metaFont="system"/>
@@ -997,55 +840,6 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <customView hidden="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1rv-R8-fXe" userLabel="LEARN VIEW">
-                                <rect key="frame" x="0.0" y="0.0" width="646" height="420"/>
-                                <subviews>
-                                    <button verticalHuggingPriority="750" fixedFrame="YES" tag="5" translatesAutoresizingMaskIntoConstraints="NO" id="Qsx-RW-2Xg">
-                                        <rect key="frame" x="12" y="74" width="171" height="124"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="square" title="Learn Curve" bezelStyle="shadowlessSquare" image="largered" imagePosition="overlaps" alignment="center" inset="2" id="SDs-Yn-tWE">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="systemBold"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="onStartLearningCC:" target="XfG-lQ-9wD" id="WsL-Bb-F3M"/>
-                                        </connections>
-                                    </button>
-                                    <button verticalHuggingPriority="750" fixedFrame="YES" tag="4" translatesAutoresizingMaskIntoConstraints="NO" id="Y98-D5-LJD">
-                                        <rect key="frame" x="215" y="74" width="171" height="124"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="square" title="Learn duration" bezelStyle="shadowlessSquare" image="largered" imagePosition="overlaps" alignment="center" inset="2" id="wqa-8M-ntY">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="systemBold"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="onStartLearningCC:" target="XfG-lQ-9wD" id="FYU-c0-ayE"/>
-                                        </connections>
-                                    </button>
-                                    <button verticalHuggingPriority="750" fixedFrame="YES" tag="3" translatesAutoresizingMaskIntoConstraints="NO" id="Rg1-jG-nAK">
-                                        <rect key="frame" x="365" y="338" width="159" height="62"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="square" title="Learn Toggle" bezelStyle="shadowlessSquare" image="largered" imagePosition="overlaps" alignment="center" inset="2" id="5iI-c1-mRS">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="systemBold"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="onStartLearningCC:" target="XfG-lQ-9wD" id="Vcs-zN-aze"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                            </customView>
-                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="T8y-bV-8Ph">
-                                <rect key="frame" x="419" y="69" width="169" height="32"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="push" title="MIDI Learn" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="LS3-nF-cWk">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="onToggleLearnView:" target="XfG-lQ-9wD" id="lIB-h2-mmo"/>
-                                </connections>
-                            </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2DY-uJ-hH1">
                                 <rect key="frame" x="422" y="159" width="177" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1073,6 +867,66 @@
                                     <action selector="onSelectClockMode:" target="XfG-lQ-9wD" id="0Mn-l0-yar"/>
                                 </connections>
                             </popUpButton>
+                            <customView hidden="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1rv-R8-fXe" userLabel="LEARN VIEW">
+                                <rect key="frame" x="0.0" y="0.0" width="646" height="420"/>
+                                <subviews>
+                                    <button verticalHuggingPriority="750" fixedFrame="YES" tag="5" translatesAutoresizingMaskIntoConstraints="NO" id="Qsx-RW-2Xg">
+                                        <rect key="frame" x="12" y="74" width="171" height="124"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="square" title="Learn Curve" bezelStyle="shadowlessSquare" image="largered" imagePosition="overlaps" alignment="center" inset="2" id="SDs-Yn-tWE">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="systemBold"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="onStartLearningCC:" target="XfG-lQ-9wD" id="WsL-Bb-F3M"/>
+                                        </connections>
+                                    </button>
+                                    <button verticalHuggingPriority="750" fixedFrame="YES" tag="4" translatesAutoresizingMaskIntoConstraints="NO" id="Y98-D5-LJD">
+                                        <rect key="frame" x="215" y="74" width="171" height="124"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="square" title="Learn duration" bezelStyle="shadowlessSquare" image="largered" imagePosition="overlaps" alignment="center" inset="2" id="wqa-8M-ntY">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="systemBold"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="onStartLearningCC:" target="XfG-lQ-9wD" id="FYU-c0-ayE"/>
+                                        </connections>
+                                    </button>
+                                    <button verticalHuggingPriority="750" fixedFrame="YES" tag="3" translatesAutoresizingMaskIntoConstraints="NO" id="Rg1-jG-nAK">
+                                        <rect key="frame" x="363" y="317" width="166" height="66"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="square" title="Learn Toggle" bezelStyle="shadowlessSquare" image="largered" imagePosition="overlaps" alignment="center" inset="2" id="5iI-c1-mRS">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="systemBold"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="onStartLearningCC:" target="XfG-lQ-9wD" id="Vcs-zN-aze"/>
+                                        </connections>
+                                    </button>
+                                    <button verticalHuggingPriority="750" fixedFrame="YES" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="2Zb-NS-Arr">
+                                        <rect key="frame" x="323" y="239" width="257" height="51"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="square" title="Learn Fader" bezelStyle="shadowlessSquare" image="largered" imagePosition="overlaps" alignment="center" inset="2" id="XY0-Ot-mdk">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="systemBold"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="onStartLearningCC:" target="XfG-lQ-9wD" id="tfr-cg-P58"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </customView>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="T8y-bV-8Ph">
+                                <rect key="frame" x="419" y="69" width="169" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="MIDI Learn" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="LS3-nF-cWk">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="onToggleLearnView:" target="XfG-lQ-9wD" id="lIB-h2-mmo"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
                             <constraint firstItem="1rv-R8-fXe" firstAttribute="height" secondItem="m2S-Jp-Qdl" secondAttribute="height" id="G64-gv-Xck"/>
@@ -1082,13 +936,8 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="ibAutoLearnButton" destination="k8F-eN-wcd" id="C5V-aQ-7ik"/>
-                        <outlet property="ibBlindAutoField" destination="ki3-Z4-pQZ" id="h1V-ak-H8k"/>
-                        <outlet property="ibBlindFaderField" destination="dHx-5s-YDa" id="VyF-AF-fRW"/>
-                        <outlet property="ibBlindToggleField" destination="a5r-vr-p3i" id="jzu-F8-726"/>
                         <outlet property="ibClockMode" destination="9YW-SB-pco" id="Rjs-f2-4zF"/>
                         <outlet property="ibEyeImage" destination="LR4-fg-O6l" id="LD3-lt-5qJ"/>
-                        <outlet property="ibFaderLearnButton" destination="iFE-2O-q3q" id="0S8-aY-81q"/>
                         <outlet property="ibLearView" destination="1rv-R8-fXe" id="3cw-dy-X65"/>
                         <outlet property="ibMidiSourcesTableView" destination="ozB-0n-XBs" id="PP7-Xd-O3V"/>
                         <outlet property="ibProgressFader" destination="xmM-Xe-JBb" id="Tyu-40-TFL"/>

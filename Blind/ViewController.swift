@@ -22,26 +22,15 @@ class ViewController: NSViewController {
     case Toggle
     case Fader
     case Auto
+    case Curve
     case None
   }
   // ---
   
   @IBOutlet weak var ibEyeImage: NSImageView!
   @IBOutlet weak var ibMidiSourcesTableView: NSTableView!
-  
-  @IBOutlet weak var ibBlindToggleField: NSTextField!
-  @IBOutlet weak var ibToggleLearnButton: NSButton!
-  
-  @IBOutlet weak var ibBlindFaderField: NSTextField!
-  @IBOutlet weak var ibFaderLearnButton: NSButton!
-  
-  @IBOutlet weak var ibBlindAutoField: NSTextField!
-  @IBOutlet weak var ibAutoLearnButton: NSButton!
-  
   @IBOutlet weak var ibProgressFader: NSProgressIndicator!
-  
   @IBOutlet weak var ibClockMode: NSPopUpButton!
-  
   @IBOutlet weak var ibLearView:NSView!
   
   var ibLearnedButton:NSButton?
@@ -79,6 +68,7 @@ class ViewController: NSViewController {
     
     // setup smooth controller
     smooth = SCSmoothManager.shared
+    // smooth.clockMode = get previous clock mode from userdefaults
     
     // setup midi
     let midiConfig = SCMidiManagerConfiguration(name: "BlindMIDI")
@@ -108,49 +98,42 @@ class ViewController: NSViewController {
     let toggleValue = blindModeToggleChannel > 174 ? "\(blindModeToggleChannel - 175)/\(self.blindModeToggleCC)" : ""
     let faderValue = blindModeToggleChannel > 174 ? "\(blindModeFaderChannel - 175)/\(self.blindModeFaderCC)" : ""
     let autoValue = blindModeAutoChannel > 174 ? "\(blindModeAutoChannel - 175)/\(self.blindModeAutoCC)" : ""
-    DispatchQueue.main.async {
-      self.ibBlindToggleField.stringValue = toggleValue
-      self.ibBlindFaderField.stringValue = faderValue
-      self.ibBlindAutoField.stringValue = autoValue
-    }
+    // TODO: fix display of previous values
+//    DispatchQueue.main.async {
+//      self.ibBlindToggleField.stringValue = toggleValue
+//      self.ibBlindFaderField.stringValue = faderValue
+//      self.ibBlindAutoField.stringValue = autoValue
+//    }
   }
   
   // MARK: Actions
   
   @IBAction func onToggleLearnView(_ sender: Any) {
+    if let btn = ibLearnedButton {
+      btn.isBordered = false
+      ibLearnedButton = nil
+    }
+
     DispatchQueue.main.async {
       self.ibLearView.isHidden = !self.ibLearView.isHidden
     }
   }
   
   @IBAction func onStartLearningCC(_ sender:NSButton) {
+    if let previous = ibLearnedButton {
+      previous.isBordered = false
+    }
     ibLearnedButton = sender
-    print("learning for tag \(sender.tag)")
+    sender.isBordered = true
+    
+/* tags :
+ 2 fader
+ 3 toggle
+ 4 duration
+ 5 curve
+*/
   }
   
-  @IBAction func onToggleLearnButtonPushed(_ sender: Any) {
-    currentLearnMode = .Toggle
-    isLearnModeActive = true
-    DispatchQueue.main.async {
-      self.ibToggleLearnButton.title = "..."
-    }
-  }
-  
-  @IBAction func onFaderLearnButtonPushed(_ sender: Any) {
-    currentLearnMode = .Fader
-    isLearnModeActive = true
-    DispatchQueue.main.async {
-      self.ibFaderLearnButton.title = "..."
-    }
-  }
-  
-  @IBAction func onAutoLearnButtonPushed(_ sender: Any) {
-    currentLearnMode = .Auto
-    isLearnModeActive = true
-    DispatchQueue.main.async {
-      self.ibAutoLearnButton.title = "..."
-    }
-  }
 
   @IBAction func onSelectClockMode(_ sender: Any) {
     if let clockMode = ibClockMode.selectedItem?.title {
@@ -198,7 +181,7 @@ extension ViewController: SCMidiDelegate {
       if (v1 & 0xF0) == 0xB0 { // this is a CC message}
         
         if isLearnModeActive {
-          
+/* TODO: refactor
           switch currentLearnMode {
           case .Fader:
             // get values
@@ -246,8 +229,9 @@ extension ViewController: SCMidiDelegate {
           isLearnModeActive = false
           currentLearnMode = .None
           return
+         */
         }
-        
+
         switch (v1, v2) {
           
         // Blind mode Toggle CC
