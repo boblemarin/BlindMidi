@@ -40,14 +40,16 @@ class ViewController: NSViewController {
   
   @IBOutlet weak var ibProgressFader: NSProgressIndicator!
   
+  @IBOutlet weak var ibClockMode: NSPopUpButton!
   
   @IBOutlet weak var ibLearView:NSView!
   
+  var ibLearnedButton:NSButton?
   
   let imgCheckOn = NSImage(named: NSImage.Name(rawValue: "checkbox_on"))
   let imgCheckOff = NSImage(named: NSImage.Name(rawValue: "checkbox_off"))
   
-  // should move to SCSmoothManager
+  // should move to SCSmoothManager ? no
   var isLearnModeActive = false
   var currentLearnMode:LearnMode = .None
   var isBlindModeActive = false
@@ -57,15 +59,26 @@ class ViewController: NSViewController {
   var blindModeFaderCC:UInt8 = 15
   var blindModeAutoChannel:UInt8 = 176
   var blindModeAutoCC:UInt8 = 16
+  // maybe these, but no
   var lastValues = [String:(UInt8,UInt8,UInt8)]()
   var blindValues = [String:(UInt8,UInt8,UInt8)]()
   // ---
   
   var midi:SCMidiManager!
   var mode:SCMode = .passthrough
+  var smooth:SCSmoothManager!
   
   override func viewDidLoad() {
     super.viewDidLoad()
+     let defaults = UserDefaults.standard
+    
+    // setup clock mode combo box
+    ibClockMode.removeAllItems()
+    ibClockMode.addItems(withTitles: ["Internal","External"])
+    
+    
+    // setup smooth controller
+    smooth = SCSmoothManager.shared
     
     // setup midi
     let midiConfig = SCMidiManagerConfiguration(name: "BlindMIDI")
@@ -75,7 +88,7 @@ class ViewController: NSViewController {
     midi.setup(with: midiConfig)
     
     // get saved values from CC -- should move to smoothcontroller ?
-    let defaults = UserDefaults.standard
+
     blindModeToggleChannel = UInt8(defaults.integer(forKey: "blindModeToggleChannel"))
     blindModeToggleCC = UInt8(defaults.integer(forKey: "blindModeToggleCC"))
     blindModeFaderChannel = UInt8(defaults.integer(forKey: "blindModeFaderChannel"))
@@ -110,6 +123,11 @@ class ViewController: NSViewController {
     }
   }
   
+  @IBAction func onStartLearningCC(_ sender:NSButton) {
+    ibLearnedButton = sender
+    print("learning for tag \(sender.tag)")
+  }
+  
   @IBAction func onToggleLearnButtonPushed(_ sender: Any) {
     currentLearnMode = .Toggle
     isLearnModeActive = true
@@ -134,6 +152,22 @@ class ViewController: NSViewController {
     }
   }
 
+  @IBAction func onSelectClockMode(_ sender: Any) {
+    if let clockMode = ibClockMode.selectedItem?.title {
+      switch clockMode {
+        case "Internal":
+          smooth.clockMode = .internalClock
+        case "External":
+          smooth.clockMode = .externalClock
+        default:
+          break
+      }
+    }
+    
+  }
+  
+  
+  
   func mix(_ lastValues:(UInt8, UInt8, UInt8), with blindValues:(UInt8, UInt8, UInt8), q:UInt8) {
     let mixFactor = Float(q) / 127
     let mixValue = UInt8( Float(lastValues.2) * (1 - mixFactor) + Float(blindValues.2) * mixFactor)

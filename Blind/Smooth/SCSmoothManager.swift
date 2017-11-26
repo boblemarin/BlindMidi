@@ -22,13 +22,18 @@ class SCSmoothManager {
   
   // MARK: properties
   let midi = SCMidiManager.shared
-  var clockMode:SCClockMode = .internalClock
+  var clockMode:SCClockMode = .internalClock {
+    didSet {
+      if clockMode != oldValue {
+        print("changed clock mode to : \(clockMode)")
+      }
+    }
+  }
   var lastUpdate:Double = 0
   var clockTimer:Timer?
   var running = false
   var transitions = [SCTransition]()
   
   // MARK: Public
-  
   
 }
