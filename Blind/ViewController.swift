@@ -106,6 +106,10 @@ class ViewController: NSViewController {
 //    }
   }
   
+  override func viewWillDisappear() {
+    midi.terminate()
+  }
+  
   // MARK: Actions
   
   @IBAction func onToggleLearnView(_ sender: Any) {
@@ -154,7 +158,7 @@ class ViewController: NSViewController {
   func mix(_ lastValues:(UInt8, UInt8, UInt8), with blindValues:(UInt8, UInt8, UInt8), q:UInt8) {
     let mixFactor = Float(q) / 127
     let mixValue = UInt8( Float(lastValues.2) * (1 - mixFactor) + Float(blindValues.2) * mixFactor)
-    midi.send((lastValues.0, lastValues.1, mixValue))  //TODO: refactor
+    midi.send((lastValues.0, lastValues.1, mixValue), sendBack: true)  //TODO: refactor
   }
 }
 

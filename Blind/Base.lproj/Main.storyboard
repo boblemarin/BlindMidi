@@ -789,7 +789,7 @@
                                 </scroller>
                             </scrollView>
                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LR4-fg-O6l">
-                                <rect key="frame" x="363" y="315" width="165" height="68"/>
+                                <rect key="frame" x="363" y="315" width="165" height="56"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="56" id="FRq-ho-pfm"/>
                                     <constraint firstAttribute="width" constant="165" id="fpe-vd-2an"/>
@@ -941,7 +941,6 @@
                         <outlet property="ibLearView" destination="1rv-R8-fXe" id="3cw-dy-X65"/>
                         <outlet property="ibMidiSourcesTableView" destination="ozB-0n-XBs" id="PP7-Xd-O3V"/>
                         <outlet property="ibProgressFader" destination="xmM-Xe-JBb" id="Tyu-40-TFL"/>
-                        <outlet property="ibToggleLearnButton" destination="T8y-bV-8Ph" id="0I1-Y8-j0v"/>
                     </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

@@ -28,7 +28,7 @@ class SCMidiManager {
   // MARK: Setup
   
   func setup(with configuration:SCMidiManagerConfiguration = SCMidiManagerConfiguration()) {
-    // store global refernce to singleton (for midi callbacks)
+    // store global reference to singleton (for midi callbacks)
     _SCMidiInstance = self
     midiClientName = configuration.clientName as String
     
@@ -51,6 +51,15 @@ class SCMidiManager {
     // get source names
     previousMidiSources = UserDefaults.standard.array(forKey: "previousMidiSources") as? [Int] ?? []
     midiSources = getSources()
+    midiDestinations = getDestinations()
+    
+//    for src in midiSources {
+//      print("Source: [\(src.hash)] \(src.name)")
+//    }
+//
+//    for dst in midiDestinations {
+//      print("Destination: [\(dst.hash) \(dst.name)")
+//    }
     
     for (i, source) in midiSources.enumerated() {
       if previousMidiSources.contains(source.hash) {
@@ -160,7 +169,7 @@ class SCMidiManager {
   
   // MARK: MIDI Send
   
-  func send(_ values:(UInt8, UInt8, UInt8)) {
+  func send(_ values:(UInt8, UInt8, UInt8), sendBack:Bool = false) {
     var packet = MIDIPacket()
     packet.timeStamp = 0
     packet.length = 3
@@ -170,7 +179,17 @@ class SCMidiManager {
     
     var midiPacketList = MIDIPacketList(numPackets: 1, packet: packet)
     MIDIReceived(midiOut, &midiPacketList)
+    
+    if sendBack {
+      for (i, source) in midiSources.enumerated() {
+        if source.listening {
+          MIDIReceived(MIDIGetDestination(i), &midiPacketList)
+          print("Sending back to \(midiDestinations[i].name) : \(values)")
+        }
+      }
+    }
   }
+  
   
   // MARK: MIDI Callbacks
   
@@ -206,6 +225,7 @@ class SCMidiManager {
   func onMidiInputListChanged() {
     // get fresh input list
     midiSources = getSources()
+    midiDestinations = getDestinations()
     // transfer status properties
     for (i, source) in midiSources.enumerated() {
       if connectedMidiSources.contains(source.hash) {
