@@ -13,6 +13,7 @@
 		3868FBCB1FBEDCEA009044EE /* SCMidiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3868FBCA1FBEDCEA009044EE /* SCMidiManager.swift */; };
 		3868FBCE1FBEDE69009044EE /* SCMidiSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3868FBCD1FBEDE69009044EE /* SCMidiSource.swift */; };
 		3868FBD01FBEE215009044EE /* SCMidiManagerConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3868FBCF1FBEE215009044EE /* SCMidiManagerConfiguration.swift */; };
+		3882CA4E1FCDAF84007C972D /* NSFuckingWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3882CA4D1FCDAF84007C972D /* NSFuckingWindow.swift */; };
 		38E0299F1F75ABF10068F171 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E0299E1F75ABF10068F171 /* AppDelegate.swift */; };
 		38E029A11F75ABF10068F171 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E029A01F75ABF10068F171 /* ViewController.swift */; };
 		38E029A31F75ABF10068F171 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 38E029A21F75ABF10068F171 /* Assets.xcassets */; };
@@ -30,6 +31,7 @@
 		3868FBCA1FBEDCEA009044EE /* SCMidiManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCMidiManager.swift; sourceTree = "<group>"; };
 		3868FBCD1FBEDE69009044EE /* SCMidiSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCMidiSource.swift; sourceTree = "<group>"; };
 		3868FBCF1FBEE215009044EE /* SCMidiManagerConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCMidiManagerConfiguration.swift; sourceTree = "<group>"; };
+		3882CA4D1FCDAF84007C972D /* NSFuckingWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSFuckingWindow.swift; sourceTree = "<group>"; };
 		38E0299B1F75ABF10068F171 /* BlindMIDI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BlindMIDI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		38E0299E1F75ABF10068F171 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		38E029A01F75ABF10068F171 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -114,6 +116,7 @@
 				38E029A41F75ABF10068F171 /* Main.storyboard */,
 				38E029A71F75ABF10068F171 /* Info.plist */,
 				38E029A81F75ABF10068F171 /* Blind.entitlements */,
+				3882CA4D1FCDAF84007C972D /* NSFuckingWindow.swift */,
 			);
 			path = Blind;
 			sourceTree = "<group>";
@@ -201,6 +204,7 @@
 				38E029A11F75ABF10068F171 /* ViewController.swift in Sources */,
 				3844AE541FBEF6C8001DF81B /* SCSmoothManager.swift in Sources */,
 				38F75A681FC2E4EA004EE1AC /* PKFunctionView.swift in Sources */,
+				3882CA4E1FCDAF84007C972D /* NSFuckingWindow.swift in Sources */,
 				3844AE591FBF170E001DF81B /* SCCurve.swift in Sources */,
 				38E0299F1F75ABF10068F171 /* AppDelegate.swift in Sources */,
 				3868FBCB1FBEDCEA009044EE /* SCMidiManager.swift in Sources */,
