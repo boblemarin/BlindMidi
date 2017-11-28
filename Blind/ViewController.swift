@@ -113,12 +113,6 @@ class ViewController: NSViewController {
   // MARK: Actions
   
   @IBAction func onToggleLearnView(_ sender: Any) {
-    // 177, 104, 126
-    //176, 15, 127
-    // 176, 0
-    midi.send((176, 0, UInt8(arc4random_uniform(127))), sendBack: true)
-    
-    return
     if let btn = ibLearnedButton {
       btn.isBordered = false
       ibLearnedButton = nil
