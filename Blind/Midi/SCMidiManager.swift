@@ -55,14 +55,6 @@ class SCMidiManager {
     midiSources = getSources()
     midiDestinations = getDestinations()
     
-//    for src in midiSources {
-//      print("Source: [\(src.uid)] \(src.name)")
-//    }
-//
-//    for dst in midiDestinations {
-//      print("Destination: [\(dst.uid) \(dst.name)")
-//    }
-    
     for (i, source) in midiSources.enumerated() {
       if previousMidiSources.contains(source.uid) {
         listenTo(i)
@@ -71,12 +63,12 @@ class SCMidiManager {
       }
     }
     
-    print("Connected sources : \(connectedMidiSources)")
-    print("Previous sources : \(previousMidiSources)")
+//    print("Connected sources : \(connectedMidiSources)")
+//    print("Previous sources : \(previousMidiSources)")
   }
   
   func terminate() {
-    print("Saving previous sources : \(previousMidiSources)")
+//    print("Saving previous sources : \(previousMidiSources)")
     UserDefaults.standard.set(previousMidiSources, forKey: "previousMidiSources")
   }
   
@@ -115,7 +107,6 @@ class SCMidiManager {
         if name != midiClientName {
           let dest = SCMidiDestination()
           dest.name = name
-//          dest.uid = getUniqueID(endpoint)
           dest.endPoint = endpoint
           destinations.append(dest)
         }
@@ -174,8 +165,8 @@ class SCMidiManager {
         previousMidiSources.remove(at: index)
       }
     }
-    print("Connected sources : \(connectedMidiSources)")
-    print("Previous sources : \(previousMidiSources)")
+//    print("Connected sources : \(connectedMidiSources)")
+//    print("Previous sources : \(previousMidiSources)")
   }
   
   // MARK: MIDI Send
@@ -196,7 +187,7 @@ class SCMidiManager {
         if source.listening {
           MIDISend(midiBack, source.destination, &midiPacketList)
 //          MIDIReceived(MIDIGetDestination(i), &midiPacketList)
-          print("Sending back to \(source.name) : \(values)")
+//          print("Sending back to \(source.name) : \(values)")
         }
       }
     }
