@@ -113,6 +113,12 @@ class ViewController: NSViewController {
   // MARK: Actions
   
   @IBAction func onToggleLearnView(_ sender: Any) {
+    // 177, 104, 126
+    //176, 15, 127
+    // 176, 0
+    midi.send((176, 0, UInt8(arc4random_uniform(127))), sendBack: true)
+    
+    return
     if let btn = ibLearnedButton {
       btn.isBordered = false
       ibLearnedButton = nil
@@ -178,6 +184,7 @@ extension ViewController: SCMidiDelegate {
     // cycle through multiple messages
     while i < midi.count - 2 {
       // store command values
+//      let vm = (midi[i] << 8) | midi[i+1]
       let v1 = midi[i]
       let v2 = midi[i+1]
       let v3 = midi[i+2]
@@ -240,17 +247,23 @@ extension ViewController: SCMidiDelegate {
           
         // Blind mode Toggle CC
         case (blindModeToggleChannel, blindModeToggleCC) :
-          isBlindModeActive = v3 > 0
-          DispatchQueue.main.async {
-            self.ibEyeImage.alphaValue = self.isBlindModeActive ? 1 : 0.5
-          }
-          if !isBlindModeActive {
-            for (id, value) in blindValues {
-              self.midi.send(value)
-              lastValues[id] = value
+          let newState = v3 > 0
+          if newState != isBlindModeActive {
+            isBlindModeActive = newState
+            DispatchQueue.main.async {
+              self.ibEyeImage.alphaValue = self.isBlindModeActive ? 1 : 0.5
             }
-            blindValues.removeAll()
+            if isBlindModeActive {
+              
+            } else {
+              for (id, value) in blindValues {
+                self.midi.send(value)
+                lastValues[id] = value
+              }
+              blindValues.removeAll()
+            }
           }
+          
           
         // Blind mode Fader CC
         case (blindModeFaderChannel, blindModeFaderCC):

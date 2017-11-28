@@ -16,12 +16,13 @@ class SCMidiManager {
   var midiClientName = ""
   var midiClient:MIDIClientRef = 0
   var midiOut:MIDIEndpointRef = 0
+  var midiBack:MIDIEndpointRef = 0
   var midiIn:MIDIPortRef = 0
   var vrMidiIn = MIDIEndpointRef()
   var midiSources:[SCMidiSource]!
   var midiDestinations:[SCMidiDestination]!
-  var connectedMidiSources = [Int]()
-  var previousMidiSources:[Int]!
+  var connectedMidiSources = [Int32]()
+  var previousMidiSources:[Int32]!
   var delegate:SCMidiDelegate?
   var sourcesDelegate:SCMidiSourcesDelegate?
 
@@ -43,28 +44,29 @@ class SCMidiManager {
     }
     if configuration.enableMidiInput {
       MIDIInputPortCreate(midiClient, configuration.clientName, SCMIDIReadProc, nil, &midiIn)
+      MIDIOutputPortCreate(midiClient, configuration.clientName, &midiBack)
     }
     if configuration.enableVirtualDestination {
       MIDIDestinationCreate(midiClient, configuration.clientName, SCVRMIDIReadProc, nil, &vrMidiIn)
     }
     
     // get source names
-    previousMidiSources = UserDefaults.standard.array(forKey: "previousMidiSources") as? [Int] ?? []
+    previousMidiSources = UserDefaults.standard.array(forKey: "previousMidiSources") as? [Int32] ?? []
     midiSources = getSources()
     midiDestinations = getDestinations()
     
 //    for src in midiSources {
-//      print("Source: [\(src.hash)] \(src.name)")
+//      print("Source: [\(src.uid)] \(src.name)")
 //    }
 //
 //    for dst in midiDestinations {
-//      print("Destination: [\(dst.hash) \(dst.name)")
+//      print("Destination: [\(dst.uid) \(dst.name)")
 //    }
     
     for (i, source) in midiSources.enumerated() {
-      if previousMidiSources.contains(source.hash) {
+      if previousMidiSources.contains(source.uid) {
         listenTo(i)
-        connectedMidiSources.append(source.hash)
+        connectedMidiSources.append(source.uid)
         midiSources[i].listening = true
       }
     }
@@ -74,6 +76,7 @@ class SCMidiManager {
   }
   
   func terminate() {
+    print("Saving previous sources : \(previousMidiSources)")
     UserDefaults.standard.set(previousMidiSources, forKey: "previousMidiSources")
   }
   
@@ -83,7 +86,7 @@ class SCMidiManager {
   {
     var param: Unmanaged<CFString>?
     var name: String = "Error"
-    
+
     let err: OSStatus = MIDIObjectGetStringProperty(obj, kMIDIPropertyDisplayName, &param)
     if err == OSStatus(noErr)
     {
@@ -91,6 +94,13 @@ class SCMidiManager {
     }
     
     return name
+  }
+  
+  private func getUniqueID(_ obj: MIDIObjectRef) -> Int32
+  {
+    var param: Int32 = 0
+    MIDIObjectGetIntegerProperty(obj, kMIDIPropertyUniqueID, &param)
+    return param
   }
   
   func getDestinations() -> [SCMidiDestination]
@@ -105,7 +115,8 @@ class SCMidiManager {
         if name != midiClientName {
           let dest = SCMidiDestination()
           dest.name = name
-          dest.hash = endpoint.hashValue
+//          dest.uid = getUniqueID(endpoint)
+          dest.endPoint = endpoint
           destinations.append(dest)
         }
       }
@@ -124,7 +135,7 @@ class SCMidiManager {
         if name != midiClientName {
           let src = SCMidiSource()
           src.name = name
-          src.hash = endpoint.hashValue
+          src.uid = getUniqueID(endpoint)
           sources.append(src)
         }
       }
@@ -147,24 +158,24 @@ class SCMidiManager {
   func toggleInput(_ i:Int) {
     let listening = !midiSources[i].listening
     midiSources[i].listening = listening
-    let hash = midiSources[i].hash
+    let uid = midiSources[i].uid
     if listening {
       listenTo(i)
-      connectedMidiSources.append(hash)
-      if !previousMidiSources.contains(hash) {
-        previousMidiSources.append(hash)
+      connectedMidiSources.append(uid)
+      if !previousMidiSources.contains(uid) {
+        previousMidiSources.append(uid)
       }
     } else {
       stopListeningTo(i)
-      if let index = connectedMidiSources.index(of: hash) {
+      if let index = connectedMidiSources.index(of: uid) {
         connectedMidiSources.remove(at: index)
       }
-      if let index = previousMidiSources.index(of: hash) {
+      if let index = previousMidiSources.index(of: uid) {
         previousMidiSources.remove(at: index)
       }
     }
-//    print("Connected sources : \(connectedMidiSources)")
-//    print("Previous sources : \(previousMidiSources)")
+    print("Connected sources : \(connectedMidiSources)")
+    print("Previous sources : \(previousMidiSources)")
   }
   
   // MARK: MIDI Send
@@ -181,15 +192,15 @@ class SCMidiManager {
     MIDIReceived(midiOut, &midiPacketList)
     
     if sendBack {
-      for (i, source) in midiSources.enumerated() {
+      for source in midiSources {
         if source.listening {
-          MIDIReceived(MIDIGetDestination(i), &midiPacketList)
-          print("Sending back to \(midiDestinations[i].name) : \(values)")
+          MIDISend(midiBack, source.destination, &midiPacketList)
+//          MIDIReceived(MIDIGetDestination(i), &midiPacketList)
+          print("Sending back to \(source.name) : \(values)")
         }
       }
     }
   }
-  
   
   // MARK: MIDI Callbacks
   
@@ -223,19 +234,25 @@ class SCMidiManager {
   }
   
   func onMidiInputListChanged() {
-    // get fresh input list
+    // get fresh input lists
     midiSources = getSources()
     midiDestinations = getDestinations()
     // transfer status properties
     for (i, source) in midiSources.enumerated() {
-      if connectedMidiSources.contains(source.hash) {
+      let uid = source.uid
+      if connectedMidiSources.contains(uid) {
         // already connected, mark as appropriate
         midiSources[i].listening = true
-      } else if previousMidiSources.contains(source.hash) {
+      } else if previousMidiSources.contains(uid) {
         // source has come back, connect and store
-        connectedMidiSources.append(source.hash)
+        connectedMidiSources.append(uid)
         midiSources[i].listening = true
         listenTo(i)
+      }
+      for destination in midiDestinations {
+        if destination.name == source.name {
+          source.destination = destination.endPoint
+        }
       }
     }
     // tell delegate
