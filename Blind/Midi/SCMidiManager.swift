@@ -193,6 +193,22 @@ class SCMidiManager {
     }
   }
   
+  func sendBack(_ values:(UInt8, UInt8, UInt8)) {
+    var packet = MIDIPacket()
+    packet.timeStamp = 0
+    packet.length = 3
+    packet.data.0 = values.0
+    packet.data.1 = values.1
+    packet.data.2 = values.2
+    var midiPacketList = MIDIPacketList(numPackets: 1, packet: packet)
+    
+    for source in midiSources {
+      if source.listening {
+        MIDISend(midiBack, source.destination, &midiPacketList)
+      }
+    }
+  }
+  
   // MARK: MIDI Callbacks
   
   func onMidiReceived(_ pktList:UnsafePointer<MIDIPacketList>) {

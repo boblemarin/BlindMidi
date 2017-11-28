@@ -938,6 +938,7 @@
                     <connections>
                         <outlet property="ibClockMode" destination="9YW-SB-pco" id="Rjs-f2-4zF"/>
                         <outlet property="ibEyeImage" destination="LR4-fg-O6l" id="LD3-lt-5qJ"/>
+                        <outlet property="ibFnView" destination="3lz-UZ-oeQ" id="Z5o-cj-eQJ"/>
                         <outlet property="ibLearView" destination="1rv-R8-fXe" id="3cw-dy-X65"/>
                         <outlet property="ibMidiSourcesTableView" destination="ozB-0n-XBs" id="PP7-Xd-O3V"/>
                         <outlet property="ibProgressFader" destination="xmM-Xe-JBb" id="Tyu-40-TFL"/>

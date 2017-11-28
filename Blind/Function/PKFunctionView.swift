@@ -22,7 +22,9 @@ class PKFunctionView:NSView {
   
   func updateCurve(_ ratio:CGFloat) {
     curve = ratio
-    needsDisplay = true
+    DispatchQueue.main.async {
+      self.needsDisplay = true
+    }
   }
   
   override func draw(_ dirtyRect: NSRect) {
