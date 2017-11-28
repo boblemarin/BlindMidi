@@ -26,6 +26,12 @@ class SCSmoothManager {
     didSet {
       if clockMode != oldValue {
         print("changed clock mode to : \(clockMode)")
+        // TODO: implement timer management for internal clock mode
+        if clockMode == .externalClock {
+          self.midi.virtualMidiDelegate = self
+        } else {
+          self.midi.virtualMidiDelegate = nil
+        }
       }
     }
   }
@@ -36,4 +42,14 @@ class SCSmoothManager {
   
   // MARK: Public
   
+  func update() {
+    
+  }
+  
+}
+
+extension SCSmoothManager: SCMidiDelegate {
+  func handleMidi(_ midi: [UInt8]) {
+    update()
+  }
 }

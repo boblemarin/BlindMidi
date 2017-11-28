@@ -31,6 +31,7 @@ class ViewController: NSViewController {
   @IBOutlet weak var ibMidiSourcesTableView: NSTableView!
   @IBOutlet weak var ibProgressFader: NSProgressIndicator!
   @IBOutlet weak var ibClockMode: NSPopUpButton!
+  @IBOutlet weak var ibDurationField: NSTextField!
   @IBOutlet weak var ibLearView:NSView!
   @IBOutlet weak var ibFnView: PKFunctionView!
   
@@ -52,7 +53,7 @@ class ViewController: NSViewController {
   var blindModeCurveChannel:UInt8 = 176
   var blindModeCurveCC:UInt8 = 12
   var blindModeDurationChannel:UInt8 = 176
-  var blindModedurationCC:UInt8 = 13
+  var blindModeDurationCC:UInt8 = 13
   // maybe these, but no
   var lastValues = [String:(UInt8,UInt8,UInt8)]()
   var blindValues = [String:(UInt8,UInt8,UInt8)]()
@@ -283,6 +284,13 @@ extension ViewController: SCMidiDelegate {
         case (blindModeCurveChannel, blindModeCurveCC):
           let val = (CGFloat(v3) / 127) * 16 - 8
           self.ibFnView.updateCurve( val )
+          
+          
+        // Blind mode Duration CC
+        case (blindModeDurationChannel, blindModeDurationCC):
+          DispatchQueue.main.async {
+            self.ibDurationField.stringValue = "-\(v3)-"
+          }
           
           
         case (blindModeAutoChannel, blindModeAutoCC):

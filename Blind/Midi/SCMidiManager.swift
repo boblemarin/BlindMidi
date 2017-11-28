@@ -24,6 +24,7 @@ class SCMidiManager {
   var connectedMidiSources = [Int32]()
   var previousMidiSources:[Int32]!
   var delegate:SCMidiDelegate?
+  var virtualMidiDelegate:SCMidiDelegate?
   var sourcesDelegate:SCMidiSourcesDelegate?
 
   // MARK: Setup
@@ -237,7 +238,28 @@ class SCMidiManager {
   }
   
   func onVirtualMidiReceived(_ pktList:UnsafePointer<MIDIPacketList>) {
+    guard let delegate = virtualMidiDelegate else {
+      return
+    }
     
+    let packetList:MIDIPacketList = pktList.pointee
+    var packet:MIDIPacket = packetList.packet
+    for _ in 1...packetList.numPackets
+    {
+      let bytes = Mirror(reflecting: packet.data).children
+      var midi = [UInt8]()
+      
+      var i = packet.length
+      for (_, attr) in bytes.enumerated()
+      {
+        midi.append(attr.value as! UInt8)
+        i -= 1
+        if i <= 0 { break }
+      }
+      
+      delegate.handleMidi(midi)
+      packet = MIDIPacketNext(&packet).pointee
+    }
   }
   
   func onMidiInputListChanged() {
