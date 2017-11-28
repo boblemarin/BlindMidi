@@ -32,6 +32,7 @@ class ViewController: NSViewController {
   @IBOutlet weak var ibProgressFader: NSProgressIndicator!
   @IBOutlet weak var ibClockMode: NSPopUpButton!
   @IBOutlet weak var ibLearView:NSView!
+  @IBOutlet weak var ibFnView: PKFunctionView!
   
   var ibLearnedButton:NSButton?
   
@@ -48,6 +49,10 @@ class ViewController: NSViewController {
   var blindModeFaderCC:UInt8 = 15
   var blindModeAutoChannel:UInt8 = 176
   var blindModeAutoCC:UInt8 = 16
+  var blindModeCurveChannel:UInt8 = 176
+  var blindModeCurveCC:UInt8 = 12
+  var blindModeDurationChannel:UInt8 = 176
+  var blindModedurationCC:UInt8 = 13
   // maybe these, but no
   var lastValues = [String:(UInt8,UInt8,UInt8)]()
   var blindValues = [String:(UInt8,UInt8,UInt8)]()
@@ -85,6 +90,8 @@ class ViewController: NSViewController {
     blindModeFaderCC = UInt8(defaults.integer(forKey: "blindModeFaderCC"))
     blindModeAutoChannel = UInt8(defaults.integer(forKey: "blindModeAutoChannel"))
     blindModeAutoCC = UInt8(defaults.integer(forKey: "blindModeAutoCC"))
+    
+    midi.sendBack((blindModeCurveChannel, blindModeCurveCC, 63))
     
     // configure table view
     ibMidiSourcesTableView.delegate = self
@@ -271,6 +278,12 @@ extension ViewController: SCMidiDelegate {
           DispatchQueue.main.async {
             self.ibProgressFader.doubleValue = Double(v3) / 127
           }
+        
+        // Blind mode Curve CC
+        case (blindModeCurveChannel, blindModeCurveCC):
+          let val = (CGFloat(v3) / 127) * 16 - 8
+          self.ibFnView.updateCurve( val )
+          
           
         case (blindModeAutoChannel, blindModeAutoCC):
           // TODO: start timer and move parameters
