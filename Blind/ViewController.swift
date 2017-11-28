@@ -251,7 +251,7 @@ extension ViewController: SCMidiDelegate {
               
             } else {
               for (id, value) in blindValues {
-                self.midi.send(value)
+                self.midi.send(value, sendBack: true)
                 lastValues[id] = value
               }
               blindValues.removeAll()
