@@ -51,22 +51,18 @@ class ViewController: NSViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    // setup smooth controller
+    smooth = SCSmoothManager.shared
     
     // setup clock mode combo box
     ibClockMode.removeAllItems()
     ibClockMode.addItems(withTitles: ["Internal","External"])
-    
-    // setup smooth controller
-    smooth = SCSmoothManager.shared
     if let cm =  defaults.string(forKey: "clockMode") {
       ibClockMode.selectItem(withTitle: cm)
-      switch cm {
-        case "Internal":
-          smooth.clockMode = .internalClock
-        case "External":
-          smooth.clockMode = .externalClock
-        default:
-          break
+      if cm == "Internal" {
+        smooth.clockMode = .internalClock
+      } else {
+        smooth.clockMode = .externalClock
       }
     }
     
@@ -92,14 +88,6 @@ class ViewController: NSViewController {
     ibMidiSourcesTableView.delegate = self
     ibMidiSourcesTableView.dataSource = self
     ibEyeImage.alphaValue = 0.5
-  }
-  
-  func getSavedValueFor(_ key:String, defaultValue:UInt16 = 0) -> UInt16 {
-    let val = UserDefaults.standard.integer(forKey: key)
-    if val > 0 {
-      return UInt16(val)
-    }
-    return defaultValue
   }
   
   override func viewWillAppear() {
@@ -189,6 +177,13 @@ class ViewController: NSViewController {
     midi.send((blindValues.0, blindValues.1, mixValue), sendBack: true)
   }
   
+  func getSavedValueFor(_ key:String, defaultValue:UInt16 = 0) -> UInt16 {
+    let val = UserDefaults.standard.integer(forKey: key)
+    if val > 0 {
+      return UInt16(val)
+    }
+    return defaultValue
+  }
   
   func clearBlindValues() {
     //print("clear stored blind values")
@@ -224,7 +219,6 @@ extension ViewController: SCMidiDelegate {
     // cycle through multiple messages
     while i < midi.count - 2 {
       // store command values
-//      let vm = (midi[i] << 8) | midi[i+1]
       let v1 = midi[i]
       let v2 = midi[i+1]
       let v3 = midi[i+2]

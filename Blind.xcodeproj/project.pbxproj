@@ -112,11 +112,11 @@
 				3868FBCC1FBEDE4A009044EE /* Midi */,
 				38E0299E1F75ABF10068F171 /* AppDelegate.swift */,
 				38E029A01F75ABF10068F171 /* ViewController.swift */,
+				3882CA4D1FCDAF84007C972D /* NSFuckingWindow.swift */,
 				38E029A21F75ABF10068F171 /* Assets.xcassets */,
 				38E029A41F75ABF10068F171 /* Main.storyboard */,
 				38E029A71F75ABF10068F171 /* Info.plist */,
 				38E029A81F75ABF10068F171 /* Blind.entitlements */,
-				3882CA4D1FCDAF84007C972D /* NSFuckingWindow.swift */,
 			);
 			path = Blind;
 			sourceTree = "<group>";
