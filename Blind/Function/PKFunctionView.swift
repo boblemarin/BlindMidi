@@ -31,7 +31,7 @@ class PKFunctionView:NSView {
     let rect = NSInsetRect(self.bounds, 1, 1)
     let fsteps = rect.width
     let steps = Int(fsteps)
-    let path = NSBezierPath(rect: rect)
+    let path = NSBezierPath()
     path.move(to: NSPoint(x: rect.minX, y: rect.minY))
     for i in 1...steps {
       let fi = CGFloat(i)
