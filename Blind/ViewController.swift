@@ -58,7 +58,17 @@ class ViewController: NSViewController {
     
     // setup smooth controller
     smooth = SCSmoothManager.shared
-    // smooth.clockMode = get previous clock mode from userdefaults
+    if let cm =  defaults.string(forKey: "clockMode") {
+      ibClockMode.selectItem(withTitle: cm)
+      switch cm {
+        case "Internal":
+          smooth.clockMode = .internalClock
+        case "External":
+          smooth.clockMode = .externalClock
+        default:
+          break
+      }
+    }
     
     // setup midi
     let midiConfig = SCMidiManagerConfiguration(name: "BlindMIDI")
@@ -137,7 +147,7 @@ class ViewController: NSViewController {
     DispatchQueue.main.async {
       previous?.isBordered = false
       sender.isBordered = true
-      sender.title = "..."
+      //sender.title = "..."
     }
   }
   
@@ -151,6 +161,7 @@ class ViewController: NSViewController {
         default:
           break
       }
+      defaults.set(clockMode, forKey: "clockMode")
     }
   }
   
@@ -180,12 +191,12 @@ class ViewController: NSViewController {
   
   
   func clearBlindValues() {
-    print("clear stored blind values")
+    //print("clear stored blind values")
     self.blindValues.removeAll(keepingCapacity: true)
   }
   
   func startSmoothTransition() {
-    print("starting automatic parameters transition")
+    //print("starting automatic parameters transition")
   }
   
 //  @objc func blinkBlindValues() {
