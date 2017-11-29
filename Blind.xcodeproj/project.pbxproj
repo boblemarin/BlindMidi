@@ -7,16 +7,31 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		38C492571F783FE6008145E1 /* MidiHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38C492561F783FE6008145E1 /* MidiHelper.swift */; };
+		3844AE541FBEF6C8001DF81B /* SCSmoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3844AE531FBEF6C8001DF81B /* SCSmoothManager.swift */; };
+		3844AE561FBF10AC001DF81B /* SCMidiDelegates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3844AE551FBF10AC001DF81B /* SCMidiDelegates.swift */; };
+		3844AE591FBF170E001DF81B /* SCCurve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3844AE581FBF170E001DF81B /* SCCurve.swift */; };
+		3868FBCB1FBEDCEA009044EE /* SCMidiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3868FBCA1FBEDCEA009044EE /* SCMidiManager.swift */; };
+		3868FBCE1FBEDE69009044EE /* SCMidiSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3868FBCD1FBEDE69009044EE /* SCMidiSource.swift */; };
+		3868FBD01FBEE215009044EE /* SCMidiManagerConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3868FBCF1FBEE215009044EE /* SCMidiManagerConfiguration.swift */; };
+		3882CA4E1FCDAF84007C972D /* NSFuckingWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3882CA4D1FCDAF84007C972D /* NSFuckingWindow.swift */; };
 		38E0299F1F75ABF10068F171 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E0299E1F75ABF10068F171 /* AppDelegate.swift */; };
 		38E029A11F75ABF10068F171 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E029A01F75ABF10068F171 /* ViewController.swift */; };
 		38E029A31F75ABF10068F171 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 38E029A21F75ABF10068F171 /* Assets.xcassets */; };
 		38E029A61F75ABF10068F171 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 38E029A41F75ABF10068F171 /* Main.storyboard */; };
 		38E029B01F75AC120068F171 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38E029AF1F75AC120068F171 /* CoreMIDI.framework */; };
+		38F75A641FC2E28A004EE1AC /* SCTransitionProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38F75A631FC2E28A004EE1AC /* SCTransitionProperty.swift */; };
+		38F75A661FC2E358004EE1AC /* SCTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38F75A651FC2E358004EE1AC /* SCTransition.swift */; };
+		38F75A681FC2E4EA004EE1AC /* PKFunctionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38F75A671FC2E4EA004EE1AC /* PKFunctionView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		38C492561F783FE6008145E1 /* MidiHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MidiHelper.swift; sourceTree = "<group>"; };
+		3844AE531FBEF6C8001DF81B /* SCSmoothManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCSmoothManager.swift; sourceTree = "<group>"; };
+		3844AE551FBF10AC001DF81B /* SCMidiDelegates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCMidiDelegates.swift; sourceTree = "<group>"; };
+		3844AE581FBF170E001DF81B /* SCCurve.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCCurve.swift; sourceTree = "<group>"; };
+		3868FBCA1FBEDCEA009044EE /* SCMidiManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCMidiManager.swift; sourceTree = "<group>"; };
+		3868FBCD1FBEDE69009044EE /* SCMidiSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCMidiSource.swift; sourceTree = "<group>"; };
+		3868FBCF1FBEE215009044EE /* SCMidiManagerConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCMidiManagerConfiguration.swift; sourceTree = "<group>"; };
+		3882CA4D1FCDAF84007C972D /* NSFuckingWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSFuckingWindow.swift; sourceTree = "<group>"; };
 		38E0299B1F75ABF10068F171 /* BlindMIDI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BlindMIDI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		38E0299E1F75ABF10068F171 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		38E029A01F75ABF10068F171 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -25,6 +40,9 @@
 		38E029A71F75ABF10068F171 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		38E029A81F75ABF10068F171 /* Blind.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Blind.entitlements; sourceTree = "<group>"; };
 		38E029AF1F75AC120068F171 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
+		38F75A631FC2E28A004EE1AC /* SCTransitionProperty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCTransitionProperty.swift; sourceTree = "<group>"; };
+		38F75A651FC2E358004EE1AC /* SCTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCTransition.swift; sourceTree = "<group>"; };
+		38F75A671FC2E4EA004EE1AC /* PKFunctionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PKFunctionView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,6 +57,36 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3844AE521FBEF6B1001DF81B /* Smooth */ = {
+			isa = PBXGroup;
+			children = (
+				3844AE531FBEF6C8001DF81B /* SCSmoothManager.swift */,
+				38F75A631FC2E28A004EE1AC /* SCTransitionProperty.swift */,
+				38F75A651FC2E358004EE1AC /* SCTransition.swift */,
+			);
+			path = Smooth;
+			sourceTree = "<group>";
+		};
+		3844AE571FBF16ED001DF81B /* Function */ = {
+			isa = PBXGroup;
+			children = (
+				38F75A671FC2E4EA004EE1AC /* PKFunctionView.swift */,
+				3844AE581FBF170E001DF81B /* SCCurve.swift */,
+			);
+			path = Function;
+			sourceTree = "<group>";
+		};
+		3868FBCC1FBEDE4A009044EE /* Midi */ = {
+			isa = PBXGroup;
+			children = (
+				3844AE551FBF10AC001DF81B /* SCMidiDelegates.swift */,
+				3868FBCA1FBEDCEA009044EE /* SCMidiManager.swift */,
+				3868FBCF1FBEE215009044EE /* SCMidiManagerConfiguration.swift */,
+				3868FBCD1FBEDE69009044EE /* SCMidiSource.swift */,
+			);
+			path = Midi;
+			sourceTree = "<group>";
+		};
 		38E029921F75ABF10068F171 = {
 			isa = PBXGroup;
 			children = (
@@ -59,13 +107,16 @@
 		38E0299D1F75ABF10068F171 /* Blind */ = {
 			isa = PBXGroup;
 			children = (
+				3844AE571FBF16ED001DF81B /* Function */,
+				3844AE521FBEF6B1001DF81B /* Smooth */,
+				3868FBCC1FBEDE4A009044EE /* Midi */,
 				38E0299E1F75ABF10068F171 /* AppDelegate.swift */,
-				38C492561F783FE6008145E1 /* MidiHelper.swift */,
 				38E029A01F75ABF10068F171 /* ViewController.swift */,
 				38E029A21F75ABF10068F171 /* Assets.xcassets */,
 				38E029A41F75ABF10068F171 /* Main.storyboard */,
 				38E029A71F75ABF10068F171 /* Info.plist */,
 				38E029A81F75ABF10068F171 /* Blind.entitlements */,
+				3882CA4D1FCDAF84007C972D /* NSFuckingWindow.swift */,
 			);
 			path = Blind;
 			sourceTree = "<group>";
@@ -149,9 +200,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3868FBD01FBEE215009044EE /* SCMidiManagerConfiguration.swift in Sources */,
 				38E029A11F75ABF10068F171 /* ViewController.swift in Sources */,
+				3844AE541FBEF6C8001DF81B /* SCSmoothManager.swift in Sources */,
+				38F75A681FC2E4EA004EE1AC /* PKFunctionView.swift in Sources */,
+				3882CA4E1FCDAF84007C972D /* NSFuckingWindow.swift in Sources */,
+				3844AE591FBF170E001DF81B /* SCCurve.swift in Sources */,
 				38E0299F1F75ABF10068F171 /* AppDelegate.swift in Sources */,
-				38C492571F783FE6008145E1 /* MidiHelper.swift in Sources */,
+				3868FBCB1FBEDCEA009044EE /* SCMidiManager.swift in Sources */,
+				3868FBCE1FBEDE69009044EE /* SCMidiSource.swift in Sources */,
+				38F75A641FC2E28A004EE1AC /* SCTransitionProperty.swift in Sources */,
+				38F75A661FC2E358004EE1AC /* SCTransition.swift in Sources */,
+				3844AE561FBF10AC001DF81B /* SCMidiDelegates.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

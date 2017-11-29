@@ -9,133 +9,74 @@
 import Cocoa
 import CoreMIDI
 
-var midiListener:ViewController?
-
-func MyMIDIReadProc(pktList: UnsafePointer<MIDIPacketList>,
-                    readProcRefCon: UnsafeMutableRawPointer?, srcConnRefCon: UnsafeMutableRawPointer?) -> Void
-{
-  midiListener?.onMidiReceived(pktList)
-}
-
-func MyVRMIDIReadProc(pktList: UnsafePointer<MIDIPacketList>,
-                    readProcRefCon: UnsafeMutableRawPointer?, srcConnRefCon: UnsafeMutableRawPointer?) -> Void
-{
-  //midiListener?.onMidiReceived(pktList)
-  print("ping")
-}
-
-func MyMIDIStateChangedHander(notification:UnsafePointer<MIDINotification>, rawPointer:UnsafeMutableRawPointer?) -> Void {
-  if notification.pointee.messageID == .msgSetupChanged {
-    midiListener?.refreshMidiInputList()
-  }
-  /*
-   // keep complete version for future needs
-  switch notification.pointee.messageID {
-  case .msgObjectAdded:
-    print("object added")
-//    midiListener?.refreshMidiInputList()
-  case .msgObjectRemoved:
-    print("object removed")
-//    midiListener?.refreshMidiInputList()
-    case .msgPropertyChanged:
-      print("property changed")
-    case .msgSetupChanged:
-      print("setup changed")
-      midiListener?.refreshMidiInputList()
-    case .msgIOError:
-      print("io error")
-    case .msgThruConnectionsChanged:
-      print("thru connections changed")
-    case .msgSerialPortOwnerChanged:
-      print("Serial port owner changed")
-  }
-  */
-}
-
-class MidiSource {
-  var name:String = ""
-  var hash:Int = 0
-  var listening:Bool = false
-}
 
 class ViewController: NSViewController {
- 
-  enum LearnMode {
-    case Toggle
-    case Fader
-    case Auto
-    case None
-  }
-  
+  // Interface outlets
   @IBOutlet weak var ibEyeImage: NSImageView!
   @IBOutlet weak var ibMidiSourcesTableView: NSTableView!
-  
-  @IBOutlet weak var ibBlindToggleField: NSTextField!
-  @IBOutlet weak var ibToggleLearnButton: NSButton!
-  
-  @IBOutlet weak var ibBlindFaderField: NSTextField!
-  @IBOutlet weak var ibFaderLearnButton: NSButton!
-  
-  @IBOutlet weak var ibBlindAutoField: NSTextField!
-  @IBOutlet weak var ibAutoLearnButton: NSButton!
-  
   @IBOutlet weak var ibProgressFader: NSProgressIndicator!
+  @IBOutlet weak var ibClockMode: NSPopUpButton!
+  @IBOutlet weak var ibDurationField: NSTextField!
+  @IBOutlet weak var ibLearView:NSView!
+  @IBOutlet weak var ibFnView: PKFunctionView!
   
-  let clientName = "BlindMIDI"
-  var midiClient:MIDIClientRef = 0
-  var midiOut:MIDIEndpointRef = 0
-  var midiIn:MIDIPortRef = 0
-  var vrMidiIn = MIDIEndpointRef()
-  var midiSources:[MidiSource]!
-  var connectedMidiSources = [Int]()
-  var previousMidiSources:[Int]!
+  // Input list Icon
+  let imgCheckOn = NSImage(named: NSImage.Name(rawValue: "checkbox_on"))
+  let imgCheckOff = NSImage(named: NSImage.Name(rawValue: "checkbox_off"))
   
+  // Midi Learn properties
   var isLearnModeActive = false
-  var currentLearnMode:LearnMode = .None
-  var isBlindModeActive = false
-  var blindModeToggleChannel:UInt8 = 177
-  var blindModeToggleCC:UInt8 = 15
-  var blindModeFaderChannel:UInt8 = 176
-  var blindModeFaderCC:UInt8 = 15
+  var currentLearnTag:Int = 0
+  var ibLearnedButton:NSButton?
   
-  var blindModeAutoChannel:UInt8 = 176
-  var blindModeAutoCC:UInt8 = 16
-  var lastValues = [String:(UInt8,UInt8,UInt8)]()
-  var blindValues = [String:(UInt8,UInt8,UInt8)]()
+  // Midi CC bindings
+  var midiSmoothCC:UInt16 = 0
+  var midiToggleCC:UInt16 = 0
+  var midiFaderCC:UInt16 = 0
+  var midiCurveCC:UInt16 = 0
+  var midiDurationCC:UInt16 = 0
+  var midiCancelCC:UInt16 = 0
+  
+  // Blind mode storage values
+  var lastValues = [UInt16:(UInt8,UInt8,UInt8)]()
+  var blindValues = [UInt16:(UInt8,UInt8,UInt8)]()
+  var isBlindModeActive = false
+  
+//  var blinkTimer:Timer!
+//  var blinkState = true
+  var midi:SCMidiManager!
+  var smooth:SCSmoothManager!
+  let defaults = UserDefaults.standard
   
   override func viewDidLoad() {
     super.viewDidLoad()
-
-    // get saved values from CC
-    let defaults = UserDefaults.standard
-    blindModeToggleChannel = UInt8(defaults.integer(forKey: "blindModeToggleChannel"))
-    blindModeToggleCC = UInt8(defaults.integer(forKey: "blindModeToggleCC"))
-    blindModeFaderChannel = UInt8(defaults.integer(forKey: "blindModeFaderChannel"))
-    blindModeFaderCC = UInt8(defaults.integer(forKey: "blindModeFaderCC"))
-    blindModeAutoChannel = UInt8(defaults.integer(forKey: "blindModeAutoChannel"))
-    blindModeAutoCC = UInt8(defaults.integer(forKey: "blindModeAutoCC"))
     
-    // create virtual client, source and port
-    midiListener = self
-    MIDIClientCreate(clientName as CFString, MyMIDIStateChangedHander, nil, &midiClient)
-    MIDISourceCreate(midiClient, clientName as CFString, &midiOut)
-    MIDIInputPortCreate(midiClient, clientName as CFString, MyMIDIReadProc, nil, &midiIn)
-    MIDIDestinationCreate(midiClient, clientName as CFString, MyVRMIDIReadProc, nil, &vrMidiIn)
     
-    // get source names
-    previousMidiSources = defaults.array(forKey: "previousMidiSources") as? [Int] ?? []
-    midiSources = getSources()
+    // setup clock mode combo box
+    ibClockMode.removeAllItems()
+    ibClockMode.addItems(withTitles: ["Internal","External"])
     
-    for (i, source) in midiSources.enumerated() {
-      if previousMidiSources.contains(source.hash) {
-        listenTo(i)
-        connectedMidiSources.append(source.hash)
-        midiSources[i].listening = true
-      }
-    }
+    // setup smooth controller
+    smooth = SCSmoothManager.shared
+    // smooth.clockMode = get previous clock mode from userdefaults
     
-    print("Connected sources : \(connectedMidiSources)")
-    print("Previous sources : \(previousMidiSources)")
+    // setup midi
+    let midiConfig = SCMidiManagerConfiguration(name: "BlindMIDI")
+    midiConfig.midiSourcesDelegate = self
+    midiConfig.midiDelegate = self
+    midi = SCMidiManager.shared
+    midi.setup(with: midiConfig)
+    
+    // blink timer setup
+    //blinkTimer = Timer.scheduledTimer(timeInterval: 0.2, target: self, selector: #selector(self.blinkBlindValues), userInfo: nil, repeats: true)
+    
+    // get saved values for CC`
+    midiSmoothCC = getSavedValueFor("midiSmoothCC", defaultValue: makeId(177, 14))
+    midiToggleCC = getSavedValueFor("midiToggleCC", defaultValue: makeId(177, 15))
+    midiFaderCC = getSavedValueFor("midiFaderCC", defaultValue: makeId(176, 15))
+    midiCurveCC = getSavedValueFor("midiCurveCC", defaultValue: makeId(176, 13))
+    midiDurationCC = getSavedValueFor("midiDurationCC", defaultValue: makeId(176, 14))
+    midiCancelCC = getSavedValueFor("midiCancelCC", defaultValue: makeId(177, 13))
     
     // configure table view
     ibMidiSourcesTableView.delegate = self
@@ -143,223 +84,260 @@ class ViewController: NSViewController {
     ibEyeImage.alphaValue = 0.5
   }
   
+  func getSavedValueFor(_ key:String, defaultValue:UInt16 = 0) -> UInt16 {
+    let val = UserDefaults.standard.integer(forKey: key)
+    if val > 0 {
+      return UInt16(val)
+    }
+    return defaultValue
+  }
+  
   override func viewWillAppear() {
     super.viewWillAppear()
-    // show toggle and fader cc values
-    let toggleValue = blindModeToggleChannel > 174 ? "\(blindModeToggleChannel - 175)/\(self.blindModeToggleCC)" : ""
-    let faderValue = blindModeToggleChannel > 174 ? "\(blindModeFaderChannel - 175)/\(self.blindModeFaderCC)" : ""
-    let autoValue = blindModeAutoChannel > 174 ? "\(blindModeAutoChannel - 175)/\(self.blindModeAutoCC)" : ""
-    DispatchQueue.main.async {
-      self.ibBlindToggleField.stringValue = toggleValue
-      self.ibBlindFaderField.stringValue = faderValue
-      self.ibBlindAutoField.stringValue = autoValue
+    
+    let labels = ["","",
+                  formatId(midiFaderCC),
+                  formatId(midiToggleCC),
+                  formatId(midiDurationCC),
+                  formatId(midiCurveCC),
+                  formatId(midiSmoothCC),
+                  formatId(midiCancelCC)]
+    
+    for view in ibLearView.subviews {
+      if let btn = view as? NSButton {
+        btn.title = labels[view.tag]
+      }
     }
   }
+  
   
   override func viewWillDisappear() {
-    super.viewWillDisappear()
-    
-    UserDefaults.standard.set(previousMidiSources, forKey: "previousMidiSources")
+    //blinkTimer.invalidate()
+    midi.terminate()
   }
   
-  func refreshMidiInputList() {
-    midiSources = getSources()
-    for (i, source) in midiSources.enumerated() {
-      if connectedMidiSources.contains(source.hash) {
-        // already connected, mark as appropriate
-        midiSources[i].listening = true
-      } else if previousMidiSources.contains(source.hash) {
-        // source has come back, connect and store
-        connectedMidiSources.append(source.hash)
-        midiSources[i].listening = true
-        listenTo(i)
+  // MARK: IB Actions
+  
+  @IBAction func onToggleLearnView(_ sender: Any) {
+    if let btn = ibLearnedButton {
+      btn.isBordered = false
+      ibLearnedButton = nil
+    }
+
+    DispatchQueue.main.async {
+      self.ibLearView.isHidden = !self.ibLearView.isHidden
+    }
+  }
+  
+  @IBAction func onStartLearningCC(_ sender:NSButton) {
+    let previous = ibLearnedButton
+    ibLearnedButton = sender
+    currentLearnTag = sender.tag
+    isLearnModeActive = true
+    DispatchQueue.main.async {
+      previous?.isBordered = false
+      sender.isBordered = true
+      sender.title = "..."
+    }
+  }
+  
+  @IBAction func onSelectClockMode(_ sender: Any) {
+    if let clockMode = ibClockMode.selectedItem?.title {
+      switch clockMode {
+        case "Internal":
+          smooth.clockMode = .internalClock
+        case "External":
+          smooth.clockMode = .externalClock
+        default:
+          break
       }
     }
-    ibMidiSourcesTableView.reloadData()
-  }
-
-  @IBAction func onToggleLearnButtonPushed(_ sender: Any) {
-    currentLearnMode = .Toggle
-    isLearnModeActive = true
-    DispatchQueue.main.async {
-      self.ibToggleLearnButton.title = "..."
-    }
   }
   
-  @IBAction func onFaderLearnButtonPushed(_ sender: Any) {
-    currentLearnMode = .Fader
-    isLearnModeActive = true
-    DispatchQueue.main.async {
-      self.ibFaderLearnButton.title = "..."
-    }
+  @IBAction func onSmoothButtonPushed(_ sender: Any) {
+    startSmoothTransition()
   }
   
-  @IBAction func onAutoLearnButtonPushed(_ sender: Any) {
-    currentLearnMode = .Auto
-    isLearnModeActive = true
-    DispatchQueue.main.async {
-      self.ibAutoLearnButton.title = "..."
-    }
+  @IBAction func onClearButtonPushed(_ sender: Any) {
+    clearBlindValues()
   }
   
-  func onMidiReceived(_ pktList:UnsafePointer<MIDIPacketList>) {
-      let packetList:MIDIPacketList = pktList.pointee
-      var packet:MIDIPacket = packetList.packet
-      for _ in 1...packetList.numPackets
-      {
-        let bytes = Mirror(reflecting: packet.data).children
-        var midi = [UInt8]()
-
-        var i = packet.length
-        for (_, attr) in bytes.enumerated()
-        {
-          midi.append(attr.value as! UInt8)
-          i -= 1
-          if i <= 0 { break }
-        }
-
-        handleMidi(midi)
-        packet = MIDIPacketNext(&packet).pointee
-      }
+  // MARK: Helping functions
+  
+  func makeId(_ d1:UInt8, _ d2:UInt8) -> UInt16 {
+    return UInt16(d1) << 8 + UInt16(d2)
   }
+  
+  func formatId(_ id:UInt16) -> String {
+    return "\((id>>8)-175)/\(id & 0xFF)"
+  }
+  
+  func mix(_ lastValues:(UInt8, UInt8, UInt8), with blindValues:(UInt8, UInt8, UInt8), q:UInt8) {
+    let mixFactor = Float(q) / 127
+    let mixValue = UInt8( Float(lastValues.2) * (1 - mixFactor) + Float(blindValues.2) * mixFactor)
+    midi.send((blindValues.0, blindValues.1, mixValue), sendBack: true)
+  }
+  
+  
+  func clearBlindValues() {
+    print("clear stored blind values")
+    self.blindValues.removeAll(keepingCapacity: true)
+  }
+  
+  func startSmoothTransition() {
+    print("starting automatic parameters transition")
+  }
+  
+//  @objc func blinkBlindValues() {
+//    blinkState = !blinkState
+//
+//    for (_, value) in blindValues {
+//      midi.sendBack((value.0, value.1, blinkState ? value.2 : 0))
+//    }
+//  }
+}
+
+//MARK: SCMidi delegates
+extension ViewController: SCMidiSourcesDelegate {
+  
+  func sourcesChanged(_ sources: [SCMidiSource]) {
+    self.ibMidiSourcesTableView.reloadData()
+  }
+  
+}
+
+extension ViewController: SCMidiDelegate {
   
   func handleMidi(_ midi:[UInt8]) {
     var i = 0
     // cycle through multiple messages
     while i < midi.count - 2 {
       // store command values
+//      let vm = (midi[i] << 8) | midi[i+1]
       let v1 = midi[i]
       let v2 = midi[i+1]
       let v3 = midi[i+2]
+      let intId = makeId(v1, v2)
       
       if (v1 & 0xF0) == 0xB0 { // this is a CC message}
-      
+        
         if isLearnModeActive {
-          
-          switch currentLearnMode {
-          case .Fader:
-            // get values
-            blindModeFaderChannel = v1
-            blindModeFaderCC = v2
-            // save in user defaults
-            let defaults = UserDefaults.standard
-            defaults.set(blindModeFaderChannel, forKey: "blindModeFaderChannel")
-            defaults.set(blindModeFaderCC, forKey: "blindModeFaderCC")
-            // show in interface
-            DispatchQueue.main.async {
-              self.ibBlindFaderField.stringValue = "\(v1 - 175)/\(v2)"
-              self.ibFaderLearnButton.title = "Learn"
-            }
-          case .Toggle:
-            // get values
-            blindModeToggleChannel = v1
-            blindModeToggleCC = v2
-            // save in user defaults
-            let defaults = UserDefaults.standard
-            defaults.set(blindModeToggleChannel, forKey: "blindModeToggleChannel")
-            defaults.set(blindModeToggleCC, forKey: "blindModeToggleCC")
-            // show in interface
-            DispatchQueue.main.async {
-              self.ibBlindToggleField.stringValue = "\(v1 - 175)/\(v2)"
-              self.ibToggleLearnButton.title = "Learn"
-            }
-          case .Auto:
-            // get values
-            blindModeAutoChannel = v1
-            blindModeAutoCC = v2
-            // save in user defaults
-            let defaults = UserDefaults.standard
-            defaults.set(blindModeAutoChannel, forKey: "blindModeAutoChannel")
-            defaults.set(blindModeAutoCC, forKey: "blindModeAutoCC")
-            // show in interface
-            DispatchQueue.main.async {
-              self.ibBlindAutoField.stringValue = "\(v1 - 175)/\(v2)"
-              self.ibAutoLearnButton.title = "Learn"
-            }
-          case .None:
-            break
+          switch currentLearnTag {
+            case 2: // Fader
+              midiFaderCC = intId
+              UserDefaults.standard.set(midiFaderCC, forKey: "midiFaderCC")
+            
+            case 3: // Toggle
+              midiToggleCC = intId
+              UserDefaults.standard.set(midiToggleCC, forKey: "midiToggleCC")
+            
+            case 4: // Duration
+              midiDurationCC = intId
+              UserDefaults.standard.set(midiDurationCC, forKey: "midiDurationCC")
+            
+            case 5: // Curve
+              midiCurveCC = intId
+              UserDefaults.standard.set(midiCurveCC, forKey: "midiCurveCC")
+            
+            case 6: // Smooth start
+              midiSmoothCC = intId
+              UserDefaults.standard.set(midiSmoothCC, forKey: "midiSmoothCC")
+            
+            case 7: // Cancel/Reset
+              midiCancelCC = intId
+              UserDefaults.standard.set(midiCancelCC, forKey: "midiCancelCC")
+            
+            default:
+              return
           }
-          // finish learning session
+          DispatchQueue.main.async {
+            self.ibLearnedButton?.title = self.formatId(intId)
+            self.ibLearnedButton?.isBordered = false
+          }
           isLearnModeActive = false
-          currentLearnMode = .None
+          currentLearnTag = 0
           return
         }
-        
-        switch (v1, v2) {
-          
-        // Blind mode Toggle CC
-        case (blindModeToggleChannel, blindModeToggleCC) :
-          isBlindModeActive = v3 > 0
-          DispatchQueue.main.async {
-            self.ibEyeImage.alphaValue = self.isBlindModeActive ? 1 : 0.5
-          }
-          if !isBlindModeActive {
-            for (id, value) in blindValues {
-              send(value)
-              lastValues[id] = value
+
+        switch intId {
+          case midiToggleCC : // TOGGLE
+            let newState = v3 > 0
+            if newState != isBlindModeActive {
+              isBlindModeActive = newState
+              DispatchQueue.main.async {
+                self.ibEyeImage.alphaValue = self.isBlindModeActive ? 1 : 0.5
+              }
+              if isBlindModeActive {
+                
+              } else {
+                for (id, value) in blindValues {
+                  self.midi.send(value, sendBack: true)
+                  lastValues[id] = value
+                }
+                blindValues.removeAll()
+              }
             }
-            blindValues.removeAll()
-          }
-          
-        // Blind mode Fader CC
-        case (blindModeFaderChannel, blindModeFaderCC):
-          if isBlindModeActive {
-            for (id, value) in blindValues {
-              if let lastValue = lastValues[id] {
+
+          case midiFaderCC: // FADER
+            if isBlindModeActive {
+              for (id, value) in blindValues {
+                let lastValue = lastValues[id] ?? value
                 mix(lastValue, with: value, q: v3)
               }
             }
-          }
-          DispatchQueue.main.async {
-            self.ibProgressFader.doubleValue = Double(v3) / 127
-          }
+            DispatchQueue.main.async {
+              self.ibProgressFader.doubleValue = Double(v3) / 127
+            }
           
-        case (blindModeAutoChannel, blindModeAutoCC):
-          // TODO: start timer and move parameters
-          print("starting automatic parameters transition")
+          case midiCurveCC: // CURVE
+            let val = (CGFloat(v3) / 127) * 16 - 8
+            self.ibFnView.updateCurve( val )
           
-        // Other actions
-        default:
-          let values = (v1, v2, v3)
-          if isBlindModeActive {
-            blindValues["\(v1)-\(v2)"] = values
-          } else {
-            lastValues["\(v1)-\(v2)"] = values
-            send(values)
-          }
+          
+          case midiDurationCC: // DURATION
+            DispatchQueue.main.async {
+              self.ibDurationField.stringValue = "-\(v3)-"
+            }
+          
+          
+          case midiSmoothCC: // SMOOTH
+            if v3 > 0 {
+              startSmoothTransition()
+            }
+          
+          
+          case midiCancelCC: //CANCEL
+            if v3 > 0 {
+              clearBlindValues()
+            }
+          
+          // Other actions
+          default:
+            let values = (v1, v2, v3)
+            if isBlindModeActive {
+              blindValues[intId] = values
+            } else {
+              lastValues[intId] = values
+              self.midi.send(values)
+              // TODO: check for stored duplicates and remove them
+            }
         }
       } else {
         // passthrough for non-CC messages
         let values = (v1, v2, v3)
-        send(values)
+        self.midi.send(values)
       }
       i += 3
     }
   }
-  
-  func mix(_ lastValues:(UInt8, UInt8, UInt8), with blindValues:(UInt8, UInt8, UInt8), q:UInt8) {
-    let mixFactor = Float(q) / 127
-    let mixValue = UInt8( Float(lastValues.2) * (1 - mixFactor) + Float(blindValues.2) * mixFactor)
-    send((lastValues.0, lastValues.1, mixValue))
-  }
-  
-  func send(_ values:(UInt8, UInt8, UInt8)) {
-    var packet = MIDIPacket()
-    packet.timeStamp = 0
-    packet.length = 3
-    packet.data.0 = values.0
-    packet.data.1 = values.1
-    packet.data.2 = values.2
-    
-    var midiPacketList = MIDIPacketList(numPackets: 1, packet: packet)
-    MIDIReceived(midiOut, &midiPacketList)
-  }
-  
+
 }
+
+//MARK: NSTableView delegates
 
 extension ViewController: NSTableViewDataSource {
   func numberOfRows(in tableView: NSTableView) -> Int {
-    return midiSources.count
+    return midi.midiSources.count
   }
 }
 
@@ -371,9 +349,9 @@ extension ViewController: NSTableViewDelegate {
     
     let ucell = ibMidiSourcesTableView.makeView(withIdentifier: columnID, owner: nil)
     if let cell = ucell as? NSTableCellView {
-      cell.textField?.stringValue = midiSources[row].name
-      cell.imageView?.image = NSImage(named: NSImage.Name(rawValue: midiSources[row].listening ? "checkbox_on" : "checkbox_off"))
-      //        cell.imageView?.image = NSImage(named: "checkbox_off")
+      let src = midi.midiSources[row]
+      cell.textField?.stringValue = src.name
+      cell.imageView?.image = src.listening ? imgCheckOn : imgCheckOff
       return cell
     }
     return nil
@@ -383,95 +361,10 @@ extension ViewController: NSTableViewDelegate {
     if let myTable = notification.object as? NSTableView {
       let selected = myTable.selectedRowIndexes.map { Int($0) }
       for i in selected {
-        let listening = !midiSources[i].listening
-        midiSources[i].listening = listening
-        let hash = midiSources[i].hash
-        if listening {
-          listenTo(i)
-          connectedMidiSources.append(hash)
-          if !previousMidiSources.contains(hash) {
-            previousMidiSources.append(hash)
-          }
-        } else {
-          stopListeningTo(i)
-          if let index = connectedMidiSources.index(of: hash) {
-            connectedMidiSources.remove(at: index)
-          }
-          if let index = previousMidiSources.index(of: hash) {
-            previousMidiSources.remove(at: index)
-          }
-        }
+        midi.toggleInput(i)
       }
-      print("Connected sources : \(connectedMidiSources)")
-      print("Previous sources : \(previousMidiSources)")
       ibMidiSourcesTableView.reloadData()
     }
   }
 }
 
-extension ViewController {
-  func getDisplayName(_ obj: MIDIObjectRef) -> String
-  {
-    var param: Unmanaged<CFString>?
-    var name: String = "Error"
-    
-    let err: OSStatus = MIDIObjectGetStringProperty(obj, kMIDIPropertyDisplayName, &param)
-    if err == OSStatus(noErr)
-    {
-      name =  param!.takeRetainedValue() as String
-    }
-    
-    return name
-  }
-  
-//  func getDestinationNames() -> [String]
-//  {
-//    var names:[String] = [];
-//
-//    let count: Int = MIDIGetNumberOfDestinations();
-//    for i in 0..<count {
-//      let endpoint:MIDIEndpointRef = MIDIGetDestination(i);
-//
-//      if (endpoint != 0)
-//      {
-//        names.append(getDisplayName(endpoint));
-//      }
-//    }
-//    return names;
-//  }
-  
-  func getSources() -> [MidiSource]
-  {
-    var sources = [MidiSource]()
-    let count = MIDIGetNumberOfSources()
-    for i in 0..<count {
-      let endpoint = MIDIGetSource(i)
-      if endpoint != 0 {
-        let name = getDisplayName(endpoint)
-        if name != clientName {
-          let src = MidiSource()
-          src.name = name
-          src.hash = endpoint.hashValue
-          sources.append(src)
-        }
-      }
-    }
-    return sources
-  }
-  
-
-  
-  func listenTo( _ i:Int ) {
-    var src = MIDIGetSource(i)
-    MIDIPortConnectSource(midiIn, src, &src)
-
-  }
-  
-  func stopListeningTo( _ i:Int ) {
-    let src = MIDIGetSource(i)
-    MIDIPortDisconnectSource(midiIn, src)
-  }
-  
-  
-
-}

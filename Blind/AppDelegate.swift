@@ -12,13 +12,18 @@ import Cocoa
 class AppDelegate: NSObject, NSApplicationDelegate {
 
   func applicationDidFinishLaunching(_ aNotification: Notification) {
-    let appDefaults = [
-      "blindModeToggleChannel": 177,
-      "blindModeToggleCC": 15,
-      "blindModeFaderChannel": 176,
-      "blindModeFaderCC": 15
-      ] as [String : Any]
-    UserDefaults.standard.register(defaults: appDefaults)
+//    let appDefaults = [
+//      "blindModeToggleChannel": 177,
+//      "blindModeToggleCC": 15,
+//      "blindModeFaderChannel": 176,
+//      "blindModeFaderCC": 15
+//      ] as [String : Any]
+    //UserDefaults.standard.register(defaults: appDefaults)
+//    UserDefaults.standard.set(nil, forKey: "previousMidiSources")
+    
+    let defaults = UserDefaults.standard
+//    let test:(UInt8, UInt8) = (177, 14)
+//    defaults.set(test, forKey: "test")
   }
 
   func applicationWillTerminate(_ aNotification: Notification) {
