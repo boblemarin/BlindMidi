@@ -46,6 +46,9 @@ class ViewController: NSViewController {
   var lastValues = [UInt16:(UInt8,UInt8,UInt8)]()
   var blindValues = [UInt16:(UInt8,UInt8,UInt8)]()
   var isBlindModeActive = false
+  
+//  var blinkTimer:Timer!
+//  var blinkState = true
   var midi:SCMidiManager!
   var smooth:SCSmoothManager!
   let defaults = UserDefaults.standard
@@ -68,6 +71,9 @@ class ViewController: NSViewController {
     midiConfig.midiDelegate = self
     midi = SCMidiManager.shared
     midi.setup(with: midiConfig)
+    
+    // blink timer setup
+    //blinkTimer = Timer.scheduledTimer(timeInterval: 0.2, target: self, selector: #selector(self.blinkBlindValues), userInfo: nil, repeats: true)
     
     // get saved values for CC`
     midiSmoothCC = getSavedValueFor("midiSmoothCC", defaultValue: makeId(177, 14))
@@ -93,8 +99,6 @@ class ViewController: NSViewController {
   
   override func viewWillAppear() {
     super.viewWillAppear()
-    
-    
     //midi.sendBack((blindModeCurveChannel, blindModeCurveCC, 63))
     
     // show toggle and fader cc values
@@ -109,7 +113,9 @@ class ViewController: NSViewController {
 //    }
   }
   
+  
   override func viewWillDisappear() {
+    blinkTimer.invalidate()
     midi.terminate()
   }
   
@@ -168,6 +174,14 @@ class ViewController: NSViewController {
     let mixValue = UInt8( Float(lastValues.2) * (1 - mixFactor) + Float(blindValues.2) * mixFactor)
     midi.send((blindValues.0, blindValues.1, mixValue), sendBack: true)  //TODO: refactor
   }
+  
+//  @objc func blinkBlindValues() {
+//    blinkState = !blinkState
+//
+//    for (_, value) in blindValues {
+//      midi.sendBack((value.0, value.1, blinkState ? value.2 : 0))
+//    }
+//  }
 }
 
 //MARK: SCMidi delegates
