@@ -16,17 +16,7 @@ enum SCMode {
 }
 
 class ViewController: NSViewController {
- 
-  // should move to SCSmoothManager
-  enum LearnMode {
-    case Toggle
-    case Fader
-    case Auto
-    case Curve
-    case None
-  }
-  // ---
-  
+  // Interface outlets
   @IBOutlet weak var ibEyeImage: NSImageView!
   @IBOutlet weak var ibMidiSourcesTableView: NSTableView!
   @IBOutlet weak var ibProgressFader: NSProgressIndicator!
@@ -35,32 +25,29 @@ class ViewController: NSViewController {
   @IBOutlet weak var ibLearView:NSView!
   @IBOutlet weak var ibFnView: PKFunctionView!
   
-  var ibLearnedButton:NSButton?
-  
+  // Input list Icon
   let imgCheckOn = NSImage(named: NSImage.Name(rawValue: "checkbox_on"))
   let imgCheckOff = NSImage(named: NSImage.Name(rawValue: "checkbox_off"))
   
-  // should move to SCSmoothManager ? no
+  // Midi Learn properties
   var isLearnModeActive = false
-  var currentLearnMode:LearnMode = .None
-  var isBlindModeActive = false
-  var blindModeToggleChannel:UInt8 = 177
-  var blindModeToggleCC:UInt8 = 15
-  var blindModeFaderChannel:UInt8 = 176
-  var blindModeFaderCC:UInt8 = 15
-  var blindModeAutoChannel:UInt8 = 176
-  var blindModeAutoCC:UInt8 = 16
-  var blindModeCurveChannel:UInt8 = 176
-  var blindModeCurveCC:UInt8 = 12
-  var blindModeDurationChannel:UInt8 = 176
-  var blindModeDurationCC:UInt8 = 13
-  // maybe these, but no
-  var lastValues = [String:(UInt8,UInt8,UInt8)]()
-  var blindValues = [String:(UInt8,UInt8,UInt8)]()
-  // ---
+  var currentLearnTag:Int = 0
+  var ibLearnedButton:NSButton?
   
-  var midi:SCMidiManager!
+  // Midi CC bindings
+  var midiSmoothCC:UInt16 = 0 //(UInt8, UInt8) = (177, 14)
+  var midiToggleCC:UInt16 = 0 //:(UInt8, UInt8) = (177, 15)
+  var midiFaderCC:UInt16 = 0 //:(UInt8, UInt8) = (176, 15)
+  var midiCurveCC:UInt16 = 0 //:(UInt8, UInt8) = (176, 13)
+  var midiDurationCC:UInt16 = 0 //:(UInt8, UInt8) = (176, 14)
+  var midiCancelCC:UInt16 = 0 // 177, 14
+  
+  // Blind mode storage values
+  var lastValues = [UInt16:(UInt8,UInt8,UInt8)]()
+  var blindValues = [UInt16:(UInt8,UInt8,UInt8)]()
+  var isBlindModeActive = false
   var mode:SCMode = .passthrough
+  var midi:SCMidiManager!
   var smooth:SCSmoothManager!
   
   override func viewDidLoad() {
@@ -83,16 +70,21 @@ class ViewController: NSViewController {
     midi = SCMidiManager.shared
     midi.setup(with: midiConfig)
     
-    // get saved values from CC -- should move to smoothcontroller ?
+    // get saved values from CC
 
-    blindModeToggleChannel = UInt8(defaults.integer(forKey: "blindModeToggleChannel"))
-    blindModeToggleCC = UInt8(defaults.integer(forKey: "blindModeToggleCC"))
-    blindModeFaderChannel = UInt8(defaults.integer(forKey: "blindModeFaderChannel"))
-    blindModeFaderCC = UInt8(defaults.integer(forKey: "blindModeFaderCC"))
-    blindModeAutoChannel = UInt8(defaults.integer(forKey: "blindModeAutoChannel"))
-    blindModeAutoCC = UInt8(defaults.integer(forKey: "blindModeAutoCC"))
-    
-    midi.sendBack((blindModeCurveChannel, blindModeCurveCC, 63))
+//    blindModeToggleChannel = UInt8(defaults.integer(forKey: "blindModeToggleChannel"))
+//    blindModeToggleCC = UInt8(defaults.integer(forKey: "blindModeToggleCC"))
+//    blindModeFaderChannel = UInt8(defaults.integer(forKey: "blindModeFaderChannel"))
+//    blindModeFaderCC = UInt8(defaults.integer(forKey: "blindModeFaderCC"))
+//    blindModeAutoChannel = UInt8(defaults.integer(forKey: "blindModeAutoChannel"))
+//    blindModeAutoCC = UInt8(defaults.integer(forKey: "blindModeAutoCC"))
+    midiSmoothCC = makeId(177, 14)
+    midiToggleCC = makeId(177, 15)
+    midiFaderCC = makeId(176, 15)
+    midiCurveCC = makeId(176, 13)
+    midiDurationCC = makeId(176, 14)
+    midiCancelCC = makeId(177, 13)
+
     
     // configure table view
     ibMidiSourcesTableView.delegate = self
@@ -102,10 +94,14 @@ class ViewController: NSViewController {
   
   override func viewWillAppear() {
     super.viewWillAppear()
+    
+    
+    //midi.sendBack((blindModeCurveChannel, blindModeCurveCC, 63))
+    
     // show toggle and fader cc values
-    let toggleValue = blindModeToggleChannel > 174 ? "\(blindModeToggleChannel - 175)/\(self.blindModeToggleCC)" : ""
-    let faderValue = blindModeToggleChannel > 174 ? "\(blindModeFaderChannel - 175)/\(self.blindModeFaderCC)" : ""
-    let autoValue = blindModeAutoChannel > 174 ? "\(blindModeAutoChannel - 175)/\(self.blindModeAutoCC)" : ""
+//    let toggleValue = blindModeToggleChannel > 174 ? "\(blindModeToggleChannel - 175)/\(self.blindModeToggleCC)" : ""
+//    let faderValue = blindModeToggleChannel > 174 ? "\(blindModeFaderChannel - 175)/\(self.blindModeFaderCC)" : ""
+//    let autoValue = blindModeAutoChannel > 174 ? "\(blindModeAutoChannel - 175)/\(self.blindModeAutoCC)" : ""
     // TODO: fix display of previous values
 //    DispatchQueue.main.async {
 //      self.ibBlindToggleField.stringValue = toggleValue
@@ -132,18 +128,14 @@ class ViewController: NSViewController {
   }
   
   @IBAction func onStartLearningCC(_ sender:NSButton) {
-    if let previous = ibLearnedButton {
-      previous.isBordered = false
-    }
+    let previous = ibLearnedButton
     ibLearnedButton = sender
-    sender.isBordered = true
-    
-/* tags :
- 2 fader
- 3 toggle
- 4 duration
- 5 curve
-*/
+    currentLearnTag = sender.tag
+    DispatchQueue.main.async {
+      previous?.isBordered = false
+      sender.isBordered = true
+      sender.title = "..."
+    }
   }
   
 
@@ -161,12 +153,16 @@ class ViewController: NSViewController {
     
   }
   
+  // MARK: Helping functions
   
+  func makeId(_ d1:UInt8, _ d2:UInt8) -> UInt16 {
+    return UInt16(d1) << 8 + UInt16(d2)
+  }
   
   func mix(_ lastValues:(UInt8, UInt8, UInt8), with blindValues:(UInt8, UInt8, UInt8), q:UInt8) {
     let mixFactor = Float(q) / 127
     let mixValue = UInt8( Float(lastValues.2) * (1 - mixFactor) + Float(blindValues.2) * mixFactor)
-    midi.send((lastValues.0, lastValues.1, mixValue), sendBack: true)  //TODO: refactor
+    midi.send((blindValues.0, blindValues.1, mixValue), sendBack: true)  //TODO: refactor
   }
 }
 
@@ -190,10 +186,14 @@ extension ViewController: SCMidiDelegate {
       let v1 = midi[i]
       let v2 = midi[i+1]
       let v3 = midi[i+2]
+      let intId = makeId(v1, v2)
       
       if (v1 & 0xF0) == 0xB0 { // this is a CC message}
         
         if isLearnModeActive {
+          switch currentLearnTag {
+            
+          }
 /* TODO: refactor
           switch currentLearnMode {
           case .Fader:
@@ -245,10 +245,10 @@ extension ViewController: SCMidiDelegate {
          */
         }
 
-        switch (v1, v2) {
+        switch intId {
           
         // Blind mode Toggle CC
-        case (blindModeToggleChannel, blindModeToggleCC) :
+        case midiToggleCC :
           let newState = v3 > 0
           if newState != isBlindModeActive {
             isBlindModeActive = newState
@@ -265,53 +265,57 @@ extension ViewController: SCMidiDelegate {
               blindValues.removeAll()
             }
           }
-          
-          
-        // Blind mode Fader CC
-        case (blindModeFaderChannel, blindModeFaderCC):
+
+        case midiFaderCC: // FADER
           if isBlindModeActive {
             for (id, value) in blindValues {
-              if let lastValue = lastValues[id] {
-                mix(lastValue, with: value, q: v3)
-              }
+              let lastValue = lastValues[id] ?? value
+              mix(lastValue, with: value, q: v3)
             }
           }
           DispatchQueue.main.async {
             self.ibProgressFader.doubleValue = Double(v3) / 127
           }
         
-        // Blind mode Curve CC
-        case (blindModeCurveChannel, blindModeCurveCC):
+        case midiCurveCC: // CURVE
           let val = (CGFloat(v3) / 127) * 16 - 8
           self.ibFnView.updateCurve( val )
           
           
-        // Blind mode Duration CC
-        case (blindModeDurationChannel, blindModeDurationCC):
+        case midiDurationCC: // DURATION
           DispatchQueue.main.async {
             self.ibDurationField.stringValue = "-\(v3)-"
           }
           
           
-        case (blindModeAutoChannel, blindModeAutoCC):
-          // TODO: start timer and move parameters
-          print("starting automatic parameters transition")
+        case midiSmoothCC: // SMOOTH
+          if v3 > 0 {
+            // TODO: start timer and move parameters
+            print("starting automatic parameters transition")
+          }
+          
+          
+        case midiCancelCC: //CANCEL
+          if v3 > 0 {
+            print("canceling")
+            self.blindValues.removeAll(keepingCapacity: true)
+          }
           
         // Other actions
         default:
           let values = (v1, v2, v3)
           if isBlindModeActive {
-            blindValues["\(v1)-\(v2)"] = values
+            blindValues[intId] = values
           } else {
-            lastValues["\(v1)-\(v2)"] = values
+            lastValues[intId] = values
             self.midi.send(values)
+            // TODO: check for stored duplicates and remove them
           }
         }
       } else {
         // passthrough for non-CC messages
         let values = (v1, v2, v3)
         self.midi.send(values)
-        // TODO: check for stored duplicates and remove them
       }
       i += 3
     }

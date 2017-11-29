@@ -20,6 +20,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 //      ] as [String : Any]
     //UserDefaults.standard.register(defaults: appDefaults)
 //    UserDefaults.standard.set(nil, forKey: "previousMidiSources")
+    
+    let defaults = UserDefaults.standard
+//    let test:(UInt8, UInt8) = (177, 14)
+//    defaults.set(test, forKey: "test")
   }
 
   func applicationWillTerminate(_ aNotification: Notification) {
