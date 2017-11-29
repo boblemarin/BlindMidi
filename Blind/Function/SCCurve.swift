@@ -10,6 +10,6 @@ import Foundation
 
 class SCCurve {
   static func getValue(at pos:CGFloat, curve:CGFloat) -> CGFloat {
-    return 0
+    return curve < 0 ? ((1 - pow(1 - pos, 1 - curve))) : (pow(pos, 1 + curve))
   }
 }

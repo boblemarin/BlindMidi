@@ -35,7 +35,8 @@ class PKFunctionView:NSView {
     path.move(to: NSPoint(x: rect.minX, y: rect.minY))
     for i in 1...steps {
       let fi = CGFloat(i)
-      let val = curve < 0 ? ((1 - pow((fsteps-fi) / fsteps, 1 - curve))) : (pow((fi / fsteps), 1 + curve))
+      //let val = curve < 0 ? ((1 - pow((fsteps-fi) / fsteps, 1 - curve))) : (pow((fi / fsteps), 1 + curve))
+      let val = SCCurve.getValue(at: fi / fsteps, curve: curve)
       path.line(to: NSPoint(x: rect.minX + rect.width / fsteps * fi, y: rect.minY + rect.height * val))
     }
     path.lineWidth = 1
