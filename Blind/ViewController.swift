@@ -9,11 +9,6 @@
 import Cocoa
 import CoreMIDI
 
-//enum SCMode {
-//  case passthrough
-//  case capture
-//  case learn
-//}
 
 class ViewController: NSViewController {
   // Interface outlets
@@ -35,12 +30,12 @@ class ViewController: NSViewController {
   var ibLearnedButton:NSButton?
   
   // Midi CC bindings
-  var midiSmoothCC:UInt16 = 0 //(UInt8, UInt8) = (177, 14)
-  var midiToggleCC:UInt16 = 0 //:(UInt8, UInt8) = (177, 15)
-  var midiFaderCC:UInt16 = 0 //:(UInt8, UInt8) = (176, 15)
-  var midiCurveCC:UInt16 = 0 //:(UInt8, UInt8) = (176, 13)
-  var midiDurationCC:UInt16 = 0 //:(UInt8, UInt8) = (176, 14)
-  var midiCancelCC:UInt16 = 0 // 177, 14
+  var midiSmoothCC:UInt16 = 0
+  var midiToggleCC:UInt16 = 0
+  var midiFaderCC:UInt16 = 0
+  var midiCurveCC:UInt16 = 0
+  var midiDurationCC:UInt16 = 0
+  var midiCancelCC:UInt16 = 0
   
   // Blind mode storage values
   var lastValues = [UInt16:(UInt8,UInt8,UInt8)]()
@@ -99,27 +94,29 @@ class ViewController: NSViewController {
   
   override func viewWillAppear() {
     super.viewWillAppear()
-    //midi.sendBack((blindModeCurveChannel, blindModeCurveCC, 63))
     
-    // show toggle and fader cc values
-//    let toggleValue = blindModeToggleChannel > 174 ? "\(blindModeToggleChannel - 175)/\(self.blindModeToggleCC)" : ""
-//    let faderValue = blindModeToggleChannel > 174 ? "\(blindModeFaderChannel - 175)/\(self.blindModeFaderCC)" : ""
-//    let autoValue = blindModeAutoChannel > 174 ? "\(blindModeAutoChannel - 175)/\(self.blindModeAutoCC)" : ""
-    // TODO: fix display of previous values
-//    DispatchQueue.main.async {
-//      self.ibBlindToggleField.stringValue = toggleValue
-//      self.ibBlindFaderField.stringValue = faderValue
-//      self.ibBlindAutoField.stringValue = autoValue
-//    }
+    let labels = ["","",
+                  formatId(midiFaderCC),
+                  formatId(midiToggleCC),
+                  formatId(midiDurationCC),
+                  formatId(midiCurveCC),
+                  formatId(midiSmoothCC),
+                  formatId(midiCancelCC)]
+    
+    for view in ibLearView.subviews {
+      if let btn = view as? NSButton {
+        btn.title = labels[view.tag]
+      }
+    }
   }
   
   
   override func viewWillDisappear() {
-    blinkTimer.invalidate()
+    //blinkTimer.invalidate()
     midi.terminate()
   }
   
-  // MARK: Actions
+  // MARK: IB Actions
   
   @IBAction func onToggleLearnView(_ sender: Any) {
     if let btn = ibLearnedButton {
@@ -144,7 +141,6 @@ class ViewController: NSViewController {
     }
   }
   
-
   @IBAction func onSelectClockMode(_ sender: Any) {
     if let clockMode = ibClockMode.selectedItem?.title {
       switch clockMode {
@@ -156,7 +152,14 @@ class ViewController: NSViewController {
           break
       }
     }
-    
+  }
+  
+  @IBAction func onSmoothButtonPushed(_ sender: Any) {
+    startSmoothTransition()
+  }
+  
+  @IBAction func onClearButtonPushed(_ sender: Any) {
+    clearBlindValues()
   }
   
   // MARK: Helping functions
@@ -172,7 +175,17 @@ class ViewController: NSViewController {
   func mix(_ lastValues:(UInt8, UInt8, UInt8), with blindValues:(UInt8, UInt8, UInt8), q:UInt8) {
     let mixFactor = Float(q) / 127
     let mixValue = UInt8( Float(lastValues.2) * (1 - mixFactor) + Float(blindValues.2) * mixFactor)
-    midi.send((blindValues.0, blindValues.1, mixValue), sendBack: true)  //TODO: refactor
+    midi.send((blindValues.0, blindValues.1, mixValue), sendBack: true)
+  }
+  
+  
+  func clearBlindValues() {
+    print("clear stored blind values")
+    self.blindValues.removeAll(keepingCapacity: true)
+  }
+  
+  func startSmoothTransition() {
+    print("starting automatic parameters transition")
   }
   
 //  @objc func blinkBlindValues() {
@@ -289,15 +302,13 @@ extension ViewController: SCMidiDelegate {
           
           case midiSmoothCC: // SMOOTH
             if v3 > 0 {
-              // TODO: start timer and move parameters
-              print("starting automatic parameters transition")
+              startSmoothTransition()
             }
           
           
           case midiCancelCC: //CANCEL
             if v3 > 0 {
-              print("canceling")
-              self.blindValues.removeAll(keepingCapacity: true)
+              clearBlindValues()
             }
           
           // Other actions
@@ -319,6 +330,7 @@ extension ViewController: SCMidiDelegate {
       i += 3
     }
   }
+
 }
 
 //MARK: NSTableView delegates
