@@ -187,8 +187,6 @@ class SCMidiManager {
       for source in midiSources {
         if source.listening {
           MIDISend(midiBack, source.destination, &midiPacketList)
-//          MIDIReceived(MIDIGetDestination(i), &midiPacketList)
-//          print("Sending back to \(source.name) : \(values)")
         }
       }
     }
