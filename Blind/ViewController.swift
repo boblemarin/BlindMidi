@@ -17,7 +17,7 @@ class ViewController: NSViewController {
   @IBOutlet weak var ibProgressFader: NSProgressIndicator!
   @IBOutlet weak var ibClockMode: NSPopUpButton!
   @IBOutlet weak var ibDurationField: NSTextField!
-  @IBOutlet weak var ibLearView:NSView!
+  @IBOutlet weak var ibLearnView:NSView!
   @IBOutlet weak var ibFnView: PKFunctionView!
   
   // Input list Icon
@@ -30,17 +30,20 @@ class ViewController: NSViewController {
   var ibLearnedButton:NSButton?
   
   // Midi CC bindings
-  var midiSmoothCC:UInt16 = 0
-  var midiToggleCC:UInt16 = 0
-  var midiFaderCC:UInt16 = 0
-  var midiCurveCC:UInt16 = 0
-  var midiDurationCC:UInt16 = 0
-  var midiCancelCC:UInt16 = 0
+  var midiSmoothID:UInt16 = 0
+  var midiToggleID:UInt16 = 0
+  var midiFaderID:UInt16 = 0
+  var midiCurveID:UInt16 = 0
+  var midiDurationID:UInt16 = 0
+  var midiCancelID:UInt16 = 0
+  var midiToggle:(UInt8, UInt8) = (0, 0)
+  var midiFader:(UInt8, UInt8) = (0, 0)
   
   // Blind mode storage values
   var lastValues = [UInt16:(UInt8,UInt8,UInt8)]()
   var blindValues = [UInt16:(UInt8,UInt8,UInt8)]()
   var isBlindModeActive = false
+  var lastFaderValue:UInt8 = 0
   
 //  var blinkTimer:Timer!
 //  var blinkState = true
@@ -77,12 +80,12 @@ class ViewController: NSViewController {
     //blinkTimer = Timer.scheduledTimer(timeInterval: 0.2, target: self, selector: #selector(self.blinkBlindValues), userInfo: nil, repeats: true)
     
     // get saved values for CC`
-    midiSmoothCC = getSavedValueFor("midiSmoothCC", defaultValue: makeId(177, 14))
-    midiToggleCC = getSavedValueFor("midiToggleCC", defaultValue: makeId(177, 15))
-    midiFaderCC = getSavedValueFor("midiFaderCC", defaultValue: makeId(176, 15))
-    midiCurveCC = getSavedValueFor("midiCurveCC", defaultValue: makeId(176, 13))
-    midiDurationCC = getSavedValueFor("midiDurationCC", defaultValue: makeId(176, 14))
-    midiCancelCC = getSavedValueFor("midiCancelCC", defaultValue: makeId(177, 13))
+    midiSmoothID = getSavedValueFor("midiSmoothCC", defaultValue: makeId(177, 14))
+    midiToggleID = getSavedValueFor("midiToggleCC", defaultValue: makeId(177, 15))
+    midiFaderID = getSavedValueFor("midiFaderCC", defaultValue: makeId(176, 15))
+    midiCurveID = getSavedValueFor("midiCurveCC", defaultValue: makeId(176, 13))
+    midiDurationID = getSavedValueFor("midiDurationCC", defaultValue: makeId(176, 14))
+    midiCancelID = getSavedValueFor("midiCancelCC", defaultValue: makeId(177, 13))
     
     // configure table view
     ibMidiSourcesTableView.delegate = self
@@ -94,14 +97,14 @@ class ViewController: NSViewController {
     super.viewWillAppear()
     
     let labels = ["","",
-                  formatId(midiFaderCC),
-                  formatId(midiToggleCC),
-                  formatId(midiDurationCC),
-                  formatId(midiCurveCC),
-                  formatId(midiSmoothCC),
-                  formatId(midiCancelCC)]
+                  formatId(midiFaderID),
+                  formatId(midiToggleID),
+                  formatId(midiDurationID),
+                  formatId(midiCurveID),
+                  formatId(midiSmoothID),
+                  formatId(midiCancelID)]
     
-    for view in ibLearView.subviews {
+    for view in ibLearnView.subviews {
       if let btn = view as? NSButton {
         btn.title = labels[view.tag]
       }
@@ -123,7 +126,7 @@ class ViewController: NSViewController {
     }
 
     DispatchQueue.main.async {
-      self.ibLearView.isHidden = !self.ibLearView.isHidden
+      self.ibLearnView.isHidden = !self.ibLearnView.isHidden
     }
   }
   
@@ -187,7 +190,11 @@ class ViewController: NSViewController {
   
   func clearBlindValues() {
     //print("clear stored blind values")
-    self.blindValues.removeAll(keepingCapacity: true)
+    blindValues.removeAll(keepingCapacity: true)
+    isBlindModeActive = false
+    lastFaderValue = 0
+    // TODO: send back control CCs to device
+    
   }
   
   func startSmoothTransition() {
@@ -229,28 +236,30 @@ extension ViewController: SCMidiDelegate {
         if isLearnModeActive {
           switch currentLearnTag {
             case 2: // Fader
-              midiFaderCC = intId
-              UserDefaults.standard.set(midiFaderCC, forKey: "midiFaderCC")
+              midiFaderID = intId
+              midiFader = (v1, v2)
+              UserDefaults.standard.set(midiFaderID, forKey: "midiFaderCC")
             
             case 3: // Toggle
-              midiToggleCC = intId
-              UserDefaults.standard.set(midiToggleCC, forKey: "midiToggleCC")
+              midiToggleID = intId
+              midiToggle = (v1, v2)
+              UserDefaults.standard.set(midiToggleID, forKey: "midiToggleCC")
             
             case 4: // Duration
-              midiDurationCC = intId
-              UserDefaults.standard.set(midiDurationCC, forKey: "midiDurationCC")
+              midiDurationID = intId
+              UserDefaults.standard.set(midiDurationID, forKey: "midiDurationCC")
             
             case 5: // Curve
-              midiCurveCC = intId
-              UserDefaults.standard.set(midiCurveCC, forKey: "midiCurveCC")
+              midiCurveID = intId
+              UserDefaults.standard.set(midiCurveID, forKey: "midiCurveCC")
             
             case 6: // Smooth start
-              midiSmoothCC = intId
-              UserDefaults.standard.set(midiSmoothCC, forKey: "midiSmoothCC")
+              midiSmoothID = intId
+              UserDefaults.standard.set(midiSmoothID, forKey: "midiSmoothCC")
             
             case 7: // Cancel/Reset
-              midiCancelCC = intId
-              UserDefaults.standard.set(midiCancelCC, forKey: "midiCancelCC")
+              midiCancelID = intId
+              UserDefaults.standard.set(midiCancelID, forKey: "midiCancelCC")
             
             default:
               return
@@ -261,29 +270,30 @@ extension ViewController: SCMidiDelegate {
           }
           isLearnModeActive = false
           currentLearnTag = 0
-          return
+          return // comment for immediate action
         }
 
         switch intId {
-          case midiToggleCC : // TOGGLE
+          case midiToggleID : // TOGGLE
             let newState = v3 > 0
             if newState != isBlindModeActive {
               isBlindModeActive = newState
               DispatchQueue.main.async {
-                self.ibEyeImage.alphaValue = self.isBlindModeActive ? 1 : 0.5
+                self.ibEyeImage.alphaValue = newState ? 1 : 0.5
               }
               if isBlindModeActive {
                 
               } else {
-                for (id, value) in blindValues {
-                  self.midi.send(value, sendBack: true)
-                  lastValues[id] = value
-                }
-                blindValues.removeAll()
+//                for (id, value) in blindValues {
+//                  self.midi.send(value, sendBack: true)
+//                  lastValues[id] = value
+//                }
+//                blindValues.removeAll()
               }
             }
 
-          case midiFaderCC: // FADER
+          case midiFaderID: // FADER
+            lastFaderValue = v3
             if isBlindModeActive {
               for (id, value) in blindValues {
                 let lastValue = lastValues[id] ?? value
@@ -294,24 +304,24 @@ extension ViewController: SCMidiDelegate {
               self.ibProgressFader.doubleValue = Double(v3) / 127
             }
           
-          case midiCurveCC: // CURVE
+          case midiCurveID: // CURVE
             let val = (CGFloat(v3) / 127) * 16 - 8
             self.ibFnView.updateCurve( val )
           
           
-          case midiDurationCC: // DURATION
+          case midiDurationID: // DURATION
             DispatchQueue.main.async {
               self.ibDurationField.stringValue = "-\(v3)-"
             }
           
           
-          case midiSmoothCC: // SMOOTH
+          case midiSmoothID: // SMOOTH
             if v3 > 0 {
               startSmoothTransition()
             }
           
           
-          case midiCancelCC: //CANCEL
+          case midiCancelID: //CANCEL
             if v3 > 0 {
               clearBlindValues()
             }
