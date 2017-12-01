@@ -52,7 +52,7 @@ class SCSmoothManager {
     timer.setEventHandler {
       self.update()
     }
-    timer.schedule(deadline: .now(), repeating: 0.1)
+    timer.schedule(deadline: .now(), repeating: 0.02)
     timer.resume()
     clockTimer = timer
     //print("starting timer")
@@ -64,14 +64,9 @@ class SCSmoothManager {
       return
     }
     clockTimer.cancel()
-    //clockTimer.invalidate()
     self.clockTimer = nil
   }
 
-//  @objc func timerUpdate() {
-//    //print("timer update")
-//    update()
-//  }
   
   // MARK: Public
   
@@ -83,6 +78,7 @@ class SCSmoothManager {
     
     let transition = SCTransition()
     for (id, endValue) in endValues {
+      bypassProperty(withID: id)
       let startValue = startValues[id]?.2 ?? 0
       transition.properties.append(SCTransitionProperty(channel: endValue.0, id: endValue.1, from: startValue, to: endValue.2, withID: id))
     }

@@ -69,6 +69,8 @@ class ViewController: NSViewController {
       } else {
         smooth.clockMode = .externalClock
       }
+    } else {
+      ibClockMode.selectItem(withTitle: "Internal")
     }
     
     // setup midi
@@ -209,18 +211,18 @@ class ViewController: NSViewController {
   
   func startSmoothTransition() {
     smooth.startTransitions(from: lastValues, to: blindValues, withCurve: curveValue, andDuration: durationValue)
-    blindValues.removeAll(keepingCapacity: true)
+    clearBlindValues()
   }
   
-  @objc func blinkBlindValues() {
-    //blinkState = !blinkState
-
-    //smooth.update()
-    //print("blinking")
+//  @objc func blinkBlindValues() {
+//    blinkState = !blinkState
+//
+//    smooth.update()
+//    print("blinking")
 //    for (_, value) in blindValues {
 //      midi.sendBack((value.0, value.1, blinkState ? value.2 : 0))
 //    }
-  }
+//  }
 }
 
 //MARK: SCMidi delegates
@@ -308,12 +310,12 @@ extension ViewController: SCMidiDelegate {
 
           case midiFaderID: // FADER
             faderValue = v3
-            if isBlindModeActive {
+            //if isBlindModeActive {
               for (id, value) in blindValues {
                 let lastValue = lastValues[id] ?? value
                 mix(lastValue, with: value, q: v3)
               }
-            }
+            //}
             DispatchQueue.main.async {
               self.ibProgressFader.doubleValue = Double(v3) / 127
             }
@@ -329,12 +331,10 @@ extension ViewController: SCMidiDelegate {
               self.ibDurationField.stringValue = "\(v3)s"
             }
           
-          
           case midiSmoothID: // SMOOTH
             if v3 > 0 {
               startSmoothTransition()
             }
-          
           
           case midiCancelID: //CANCEL
             if v3 > 0 {
