@@ -13,10 +13,33 @@ class SCTransition {
   var duration:Double = 0
   var position:Double = 0
   var properties = [SCTransitionProperty]()
-  var curve:CGFloat = 0
+  var curve:Double = 0
   
-  func update(_ now:Double) -> Bool {
-    position = (now - startTime) / duration
-    return false
+  func update(_ now:Double) -> [(UInt8, UInt8, UInt8)]? {
+    guard position < 1 else {
+      return nil
+    }
+    
+    position = min(1, (now - startTime) / duration)
+    
+    var values = [(UInt8, UInt8, UInt8)]()
+    let cp = SCCurve.getValue(at: position, curve: curve)
+    
+    //print("transition in progress : \(position) / \(cp)")
+    for prop in properties where !prop.bypassed {
+      let nv = UInt8(prop.startValue * (1 - cp) + prop.endValue * cp)
+      if nv != prop.lastSentValue {
+        prop.lastSentValue = nv
+        values.append((prop.channel, prop.id, nv))
+      }
+    }
+    
+    return values
+  }
+  
+  func bypassProperty(withID id:UInt16) {
+    for prop in properties where prop.intID == id {
+      prop.bypassed = true
+    }
   }
 }

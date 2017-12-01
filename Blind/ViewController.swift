@@ -43,9 +43,11 @@ class ViewController: NSViewController {
   var lastValues = [UInt16:(UInt8,UInt8,UInt8)]()
   var blindValues = [UInt16:(UInt8,UInt8,UInt8)]()
   var isBlindModeActive = false
-  var lastFaderValue:UInt8 = 0
+  var faderValue:UInt8 = 0
+  var curveValue:Double = 0
+  var durationValue:Double = 0
   
-//  var blinkTimer:Timer!
+  //var blinkTimer:Timer!
 //  var blinkState = true
   var midi:SCMidiManager!
   var smooth:SCSmoothManager!
@@ -86,6 +88,9 @@ class ViewController: NSViewController {
     midiCurveID = getSavedValueFor("midiCurveCC", defaultValue: makeId(176, 13))
     midiDurationID = getSavedValueFor("midiDurationCC", defaultValue: makeId(176, 14))
     midiCancelID = getSavedValueFor("midiCancelCC", defaultValue: makeId(177, 13))
+    
+    midiToggle = (UInt8(midiToggleID>>8),UInt8(midiToggleID&0xFF))
+    midiFader = (UInt8(midiFaderID>>8),UInt8(midiFaderID&0xFF))
     
     // configure table view
     ibMidiSourcesTableView.delegate = self
@@ -138,7 +143,6 @@ class ViewController: NSViewController {
     DispatchQueue.main.async {
       previous?.isBordered = false
       sender.isBordered = true
-      //sender.title = "..."
     }
   }
   
@@ -189,25 +193,34 @@ class ViewController: NSViewController {
   }
   
   func clearBlindValues() {
-    //print("clear stored blind values")
+    // reset state
     blindValues.removeAll(keepingCapacity: true)
     isBlindModeActive = false
-    lastFaderValue = 0
-    // TODO: send back control CCs to device
-    
+    faderValue = 0
+    // show on controllers
+    midi.sendBack((midiToggle.0, midiToggle.1, 0))
+    midi.sendBack((midiFader.0, midiFader.1, 0))
+    // show in interface
+    DispatchQueue.main.async {
+      self.ibEyeImage.alphaValue = 0.5
+      self.ibProgressFader.doubleValue = 0
+    }
   }
   
   func startSmoothTransition() {
-    //print("starting automatic parameters transition")
+    smooth.startTransitions(from: lastValues, to: blindValues, withCurve: curveValue, andDuration: durationValue)
+    blindValues.removeAll(keepingCapacity: true)
   }
   
-//  @objc func blinkBlindValues() {
-//    blinkState = !blinkState
-//
+  @objc func blinkBlindValues() {
+    //blinkState = !blinkState
+
+    //smooth.update()
+    //print("blinking")
 //    for (_, value) in blindValues {
 //      midi.sendBack((value.0, value.1, blinkState ? value.2 : 0))
 //    }
-//  }
+  }
 }
 
 //MARK: SCMidi delegates
@@ -229,43 +242,43 @@ extension ViewController: SCMidiDelegate {
       let v1 = midi[i]
       let v2 = midi[i+1]
       let v3 = midi[i+2]
-      let intId = makeId(v1, v2)
+      let intID = makeId(v1, v2)
       
       if (v1 & 0xF0) == 0xB0 { // this is a CC message}
         
         if isLearnModeActive {
           switch currentLearnTag {
             case 2: // Fader
-              midiFaderID = intId
+              midiFaderID = intID
               midiFader = (v1, v2)
               UserDefaults.standard.set(midiFaderID, forKey: "midiFaderCC")
             
             case 3: // Toggle
-              midiToggleID = intId
+              midiToggleID = intID
               midiToggle = (v1, v2)
               UserDefaults.standard.set(midiToggleID, forKey: "midiToggleCC")
             
             case 4: // Duration
-              midiDurationID = intId
+              midiDurationID = intID
               UserDefaults.standard.set(midiDurationID, forKey: "midiDurationCC")
             
             case 5: // Curve
-              midiCurveID = intId
+              midiCurveID = intID
               UserDefaults.standard.set(midiCurveID, forKey: "midiCurveCC")
             
             case 6: // Smooth start
-              midiSmoothID = intId
+              midiSmoothID = intID
               UserDefaults.standard.set(midiSmoothID, forKey: "midiSmoothCC")
             
             case 7: // Cancel/Reset
-              midiCancelID = intId
+              midiCancelID = intID
               UserDefaults.standard.set(midiCancelID, forKey: "midiCancelCC")
             
             default:
               return
           }
           DispatchQueue.main.async {
-            self.ibLearnedButton?.title = self.formatId(intId)
+            self.ibLearnedButton?.title = self.formatId(intID)
             self.ibLearnedButton?.isBordered = false
           }
           isLearnModeActive = false
@@ -273,7 +286,7 @@ extension ViewController: SCMidiDelegate {
           return // comment for immediate action
         }
 
-        switch intId {
+        switch intID {
           case midiToggleID : // TOGGLE
             let newState = v3 > 0
             if newState != isBlindModeActive {
@@ -284,6 +297,7 @@ extension ViewController: SCMidiDelegate {
               if isBlindModeActive {
                 
               } else {
+                // -- removing this clearOnExit behavior for now --
 //                for (id, value) in blindValues {
 //                  self.midi.send(value, sendBack: true)
 //                  lastValues[id] = value
@@ -293,7 +307,7 @@ extension ViewController: SCMidiDelegate {
             }
 
           case midiFaderID: // FADER
-            lastFaderValue = v3
+            faderValue = v3
             if isBlindModeActive {
               for (id, value) in blindValues {
                 let lastValue = lastValues[id] ?? value
@@ -305,13 +319,14 @@ extension ViewController: SCMidiDelegate {
             }
           
           case midiCurveID: // CURVE
-            let val = (CGFloat(v3) / 127) * 16 - 8
-            self.ibFnView.updateCurve( val )
+            curveValue = (Double(v3) / 127) * 16 - 8
+            self.ibFnView.updateCurve( curveValue )
           
           
           case midiDurationID: // DURATION
+            durationValue = smooth.durationFor(value: v3)
             DispatchQueue.main.async {
-              self.ibDurationField.stringValue = "-\(v3)-"
+              self.ibDurationField.stringValue = "\(v3)s"
             }
           
           
@@ -330,11 +345,11 @@ extension ViewController: SCMidiDelegate {
           default:
             let values = (v1, v2, v3)
             if isBlindModeActive {
-              blindValues[intId] = values
+              blindValues[intID] = values
             } else {
-              lastValues[intId] = values
+              lastValues[intID] = values
               self.midi.send(values)
-              // TODO: check for stored duplicates and remove them
+              smooth.bypassProperty(withID: intID)
             }
         }
       } else {
