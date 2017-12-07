@@ -297,8 +297,14 @@ extension ViewController: SCMidiDelegate {
                 self.ibEyeImage.alphaValue = newState ? 1 : 0.5
               }
               if isBlindModeActive {
-                
+                // entering blind mode
               } else {
+                // exit blind mode
+                for (id, _) in blindValues {
+                  if let v = lastValues[id] {
+                    self.midi.sendBack(v)
+                  }
+                }
                 // -- removing this clearOnExit behavior for now --
 //                for (id, value) in blindValues {
 //                  self.midi.send(value, sendBack: true)
