@@ -123,8 +123,17 @@ class SCSmoothManager {
     }
   }
   
-  func durationFor(value:UInt8) -> Double {
-    return Double(value)
+  func durationFor(value:UInt8) -> SCSmoothDuration {
+    let duration = SCSmoothDuration()
+    switch clockMode {
+    case .internalClock:
+      duration.value = Double(value)
+      duration.stringValue = "\(duration.value)s"
+    case .externalClock:
+      duration.value = Double(value)
+      duration.stringValue = "bar"
+    }
+    return duration
   }
 }
 

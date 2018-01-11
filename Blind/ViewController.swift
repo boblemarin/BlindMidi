@@ -332,9 +332,10 @@ extension ViewController: SCMidiDelegate {
           
           
           case midiDurationID: // DURATION
-            durationValue = smooth.durationFor(value: v3)
+            let duration = smooth.durationFor(value: v3)
+            durationValue = duration.value
             DispatchQueue.main.async {
-              self.ibDurationField.stringValue = "\(v3)s"
+              self.ibDurationField.stringValue = duration.stringValue
             }
           
           case midiSmoothID: // SMOOTH
