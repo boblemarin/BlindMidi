@@ -159,6 +159,9 @@ class ViewController: NSViewController {
           break
       }
       defaults.set(clockMode, forKey: "clockMode")
+      DispatchQueue.main.async {
+        self.ibDurationField.stringValue = self.smooth.durationLabelFor(duration: self.durationValue)
+      }
     }
   }
   

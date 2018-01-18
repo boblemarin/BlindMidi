@@ -25,7 +25,6 @@ class SCSmoothManager {
   var clockMode:SCClockMode = .internalClock {
     didSet {
       if clockMode != oldValue {
-        print("changed clock mode to : \(clockMode)")
         // TODO: implement timer management for internal clock mode
         if clockMode == .externalClock {
           self.midi.virtualMidiDelegate = self
@@ -35,6 +34,7 @@ class SCSmoothManager {
       }
     }
   }
+  let barDurations:[Double] = [1, 2, 4, 8, 12, 16, 24, 32, 64, 128]
   var lastUpdate:Double = 0
   var clockTimer:DispatchSourceTimer?
   var running = false
@@ -128,12 +128,22 @@ class SCSmoothManager {
     switch clockMode {
     case .internalClock:
       duration.value = Double(value)
-      duration.stringValue = "\(duration.value)s"
+      duration.stringValue = "\(Int(duration.value))s"
     case .externalClock:
-      duration.value = Double(value)
-      duration.stringValue = "bar"
+      let numBars = barDurations[Int(Double(value) / 128 * Double(barDurations.count))]
+      duration.value = numBars
+      duration.stringValue = "\(Int(numBars)) Bar\(numBars > 1 ? "s" : "")"
     }
     return duration
+  }
+  
+  func durationLabelFor(duration:Double) -> String {
+    switch clockMode {
+    case .internalClock:
+      return "\(Int(duration))s"
+    case .externalClock:
+      return "\(Int(duration)) Bar\(duration > 1 ? "s" : "")"
+    }
   }
 }
 
