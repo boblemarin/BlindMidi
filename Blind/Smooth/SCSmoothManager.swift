@@ -13,6 +13,10 @@ enum SCClockMode {
   case externalClock
 }
 
+//@objc protocol SCSmoothValueDelegate {
+//  func saveSentValues(_ values:[(Int, Int, Int)])
+//}
+
 class SCSmoothManager {
   // MARK: Singleton implementation
   private init() {
@@ -28,6 +32,7 @@ class SCSmoothManager {
         // TODO: implement timer management for internal clock mode
         if clockMode == .externalClock {
           self.midi.virtualMidiDelegate = self
+//          self.tickCounter = 0
         } else {
           self.midi.virtualMidiDelegate = nil
         }
@@ -36,9 +41,11 @@ class SCSmoothManager {
   }
   let barDurations:[Double] = [1, 2, 4, 8, 12, 16, 24, 32, 64, 128]
   var lastUpdate:Double = 0
+//  var tickCounter:Int = 0
   var clockTimer:DispatchSourceTimer?
   var running = false
   var transitions = [SCTransition]()
+  weak var valueDelegate:ViewController?
   
   // MARK: Private
   

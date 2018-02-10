@@ -58,6 +58,7 @@ class ViewController: NSViewController {
     
     // setup smooth controller
     smooth = SCSmoothManager.shared
+    smooth.valueDelegate = self
     
     // setup clock mode combo box
     ibClockMode.removeAllItems()
