@@ -83,34 +83,69 @@ class SCSmoothManager {
       transition.properties.append(SCTransitionProperty(channel: endValue.0, id: endValue.1, from: startValue, to: endValue.2, withID: id))
     }
     transition.curve = curve
-    transition.duration = duration
-    transition.startTime = Date.timeIntervalSinceReferenceDate
+    
+    switch clockMode {
+    case .externalClock:
+      transition.duration = duration * 96
+      transition.startTime = 0
+    case .internalClock:
+      transition.duration = duration
+      transition.startTime = Date.timeIntervalSinceReferenceDate
+    }
+    
     
     transitions.append(transition)
     
     //print("Starting timer for transitions count : \(transition.properties.count)")
-    
-    startUpdateTimer()
+    switch clockMode {
+      case .externalClock:
+        self.midi.virtualMidiDelegate = self
+      case .internalClock:
+        startUpdateTimer()
+    }
   }
   
   func update() {
     let tc = transitions.count
     guard tc > 0 else {
-      clearUpdateTimer()
+      switch clockMode {
+        case .externalClock:
+          self.midi.virtualMidiDelegate = nil
+        case .internalClock:
+          clearUpdateTimer()
+      }
       return
     }
     
-    let now = Date.timeIntervalSinceReferenceDate
     var hasCompletedTransitions = false
-    for transition in transitions {
-      if let values = transition.update(now) {
-        for value in values {
-          midi.send(value, sendBack: true)
+    
+    switch clockMode {
+      
+      case .internalClock:
+        let now = Date.timeIntervalSinceReferenceDate
+        for transition in transitions {
+          if let values = transition.update(now) {
+            for value in values {
+              midi.send(value, sendBack: true)
+            }
+          } else {
+            hasCompletedTransitions = true
+          }
         }
-      } else {
-        hasCompletedTransitions = true
-      }
+      
+      case .externalClock:
+        for transition in transitions {
+          if let values = transition.updateTick() {
+            for value in values {
+              midi.send(value, sendBack: true)
+            }
+          } else {
+            hasCompletedTransitions = true
+          }
+        }
+      
     }
+    
     
     if hasCompletedTransitions {
       transitions = transitions.filter { $0.position < 1 }
@@ -126,23 +161,23 @@ class SCSmoothManager {
   func durationFor(value:UInt8) -> SCSmoothDuration {
     let duration = SCSmoothDuration()
     switch clockMode {
-    case .internalClock:
-      duration.value = Double(value)
-      duration.stringValue = "\(Int(duration.value))s"
-    case .externalClock:
-      let numBars = barDurations[Int(Double(value) / 128 * Double(barDurations.count))]
-      duration.value = numBars
-      duration.stringValue = "\(Int(numBars)) Bar\(numBars > 1 ? "s" : "")"
+      case .internalClock:
+        duration.value = Double(value)
+        duration.stringValue = "\(Int(duration.value))s"
+      case .externalClock:
+        let numBars = barDurations[Int(Double(value) / 128 * Double(barDurations.count))]
+        duration.value = numBars
+        duration.stringValue = "\(Int(numBars)) Bar\(numBars > 1 ? "s" : "")"
     }
     return duration
   }
   
   func durationLabelFor(duration:Double) -> String {
     switch clockMode {
-    case .internalClock:
-      return "\(Int(duration))s"
-    case .externalClock:
-      return "\(Int(duration)) Bar\(duration > 1 ? "s" : "")"
+      case .internalClock:
+        return "\(Int(duration))s"
+      case .externalClock:
+        return "\(Int(duration)) Bar\(duration > 1 ? "s" : "")"
     }
   }
 }
@@ -150,5 +185,6 @@ class SCSmoothManager {
 extension SCSmoothManager: SCMidiDelegate {
   func handleMidi(_ midi: [UInt8]) {
     update()
+//    tickCounter += 1
   }
 }

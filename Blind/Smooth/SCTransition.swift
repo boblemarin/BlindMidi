@@ -37,6 +37,29 @@ class SCTransition {
     return values
   }
   
+  func updateTick() ->[(UInt8, UInt8, UInt8)]? {
+    guard position < 1 else {
+      return nil
+    }
+    startTime += 1
+    
+    position = startTime / duration
+    
+    var values = [(UInt8, UInt8, UInt8)]()
+    let cp = SCCurve.getValue(at: position, curve: curve)
+    
+    //print("transition in progress : \(position) / \(cp)")
+    for prop in properties where !prop.bypassed {
+      let nv = UInt8(prop.startValue * (1 - cp) + prop.endValue * cp)
+      if nv != prop.lastSentValue {
+        prop.lastSentValue = nv
+        values.append((prop.channel, prop.id, nv))
+      }
+    }
+    
+    return values
+  }
+  
   func bypassProperty(withID id:UInt16) {
     for prop in properties where prop.intID == id {
       prop.bypassed = true
