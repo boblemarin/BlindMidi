@@ -135,6 +135,7 @@ class SCSmoothManager {
             for value in values {
               midi.send(value, sendBack: true)
             }
+            valueDelegate?.updateLastValues(values)
           } else {
             hasCompletedTransitions = true
           }
@@ -146,6 +147,7 @@ class SCSmoothManager {
             for value in values {
               midi.send(value, sendBack: true)
             }
+            valueDelegate?.updateLastValues(values)
           } else {
             hasCompletedTransitions = true
           }

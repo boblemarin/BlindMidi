@@ -198,6 +198,13 @@ class ViewController: NSViewController {
     return defaultValue
   }
   
+  func updateLastValues(_ values:[(UInt8, UInt8, UInt8)]) {
+    for value in values {
+      let intID = makeId(value.0, value.1)
+      lastValues[intID] = value
+    }
+  }
+  
   func clearBlindValues() {
     // reset state
     blindValues.removeAll(keepingCapacity: true)
