@@ -6,6 +6,18 @@
 //  Copyright © 2017 minimal.be. All rights reserved.
 //
 
+
+/* ***************************************************************
+ TODO:
+ 
+ TO TEST - animate blind and clear buttons when launched by midi events
+ déjà en place, tester pour vérifier - take over transitionned param when launching a new transition
+ - make layout vertical
+ - l'oeil se ferme en blind mode
+ 
+ 
+ *************************************************************** */
+
 import Cocoa
 import CoreMIDI
 
@@ -16,6 +28,8 @@ class ViewController: NSViewController {
   @IBOutlet weak var ibMidiSourcesTableView: NSTableView!
   @IBOutlet weak var ibProgressFader: NSProgressIndicator!
   @IBOutlet weak var ibClockMode: NSPopUpButton!
+  @IBOutlet weak var ibSmoothButton: NSButton!
+  @IBOutlet weak var ibClearButton: NSButton!
   @IBOutlet weak var ibDurationField: NSTextField!
   @IBOutlet weak var ibLearnView:NSView!
   @IBOutlet weak var ibFnView: PKFunctionView!
@@ -51,7 +65,7 @@ class ViewController: NSViewController {
 //  var blinkState = true
   var midi:SCMidiManager!
   var smooth:SCSmoothManager!
-  let defaults = UserDefaults.standard
+//  let defaults = UserDefaults.standard
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -63,7 +77,7 @@ class ViewController: NSViewController {
     // setup clock mode combo box
     ibClockMode.removeAllItems()
     ibClockMode.addItems(withTitles: ["Internal","External"])
-    if let cm =  defaults.string(forKey: "clockMode") {
+    if let cm =  UserDefaults.standard.string(forKey: "clockMode") {
       ibClockMode.selectItem(withTitle: cm)
       if cm == "Internal" {
         smooth.clockMode = .internalClock
@@ -72,6 +86,7 @@ class ViewController: NSViewController {
       }
     } else {
       ibClockMode.selectItem(withTitle: "Internal")
+      smooth.clockMode = .internalClock
     }
     
     // setup midi
@@ -159,7 +174,7 @@ class ViewController: NSViewController {
         default:
           break
       }
-      defaults.set(clockMode, forKey: "clockMode")
+      UserDefaults.standard.set(clockMode, forKey: "clockMode")
       DispatchQueue.main.async {
         self.ibDurationField.stringValue = self.smooth.durationLabelFor(duration: self.durationValue)
       }
@@ -353,11 +368,18 @@ extension ViewController: SCMidiDelegate {
             if v3 > 0 {
               startSmoothTransition()
             }
+            DispatchQueue.main.async {
+              self.ibSmoothButton.state = v3 > 0 ? .on : .off
+            }
           
           case midiCancelID: //CANCEL
             if v3 > 0 {
               clearBlindValues()
             }
+            DispatchQueue.main.async {
+              self.ibClearButton.state = v3 > 0 ? .on : .off
+            }
+          
           
           // Other actions
           default:
