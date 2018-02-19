@@ -10,10 +10,9 @@
 /* ***************************************************************
  TODO:
  
- TO TEST - animate blind and clear buttons when launched by midi events
- déjà en place, tester pour vérifier - take over transitionned param when launching a new transition
  - make layout vertical
  - l'oeil se ferme en blind mode
+ - visual feedback on runnign transitions (use nsprogressviews ?)
  
  
  *************************************************************** */
@@ -387,11 +386,12 @@ extension ViewController: SCMidiDelegate {
           default:
             let values = (v1, v2, v3)
             if isBlindModeActive {
+              smooth.bypassProperty(withID: intID)
               blindValues[intID] = values
             } else {
+              smooth.bypassProperty(withID: intID)
               lastValues[intID] = values
               self.midi.send(values)
-              smooth.bypassProperty(withID: intID)
             }
         }
       } else {
