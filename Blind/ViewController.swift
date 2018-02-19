@@ -369,7 +369,8 @@ extension ViewController: SCMidiDelegate {
               startSmoothTransition()
             }
             DispatchQueue.main.async {
-              self.ibSmoothButton.state = v3 > 0 ? .on : .off
+//              self.ibSmoothButton.state = v3 > 0 ? .on : .off
+              self.ibSmoothButton.title = v3 > 0 ? "-Smooth-" : "Smooth"
             }
           
           case midiCancelID: //CANCEL
@@ -377,7 +378,8 @@ extension ViewController: SCMidiDelegate {
               clearBlindValues()
             }
             DispatchQueue.main.async {
-              self.ibClearButton.state = v3 > 0 ? .on : .off
+//              self.ibClearButton.state = v3 > 0 ? .on : .off
+              self.ibClearButton.title = v3 > 0 ? "-Clear-" : "Clear"
             }
           
           
