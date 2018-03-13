@@ -4,6 +4,7 @@
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+        <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
     </dependencies>
     <scenes>
         <!--Application-->
@@ -971,8 +972,38 @@
                                     <action selector="onToggleLearnView:" target="XfG-lQ-9wD" id="lIB-h2-mmo"/>
                                 </connections>
                             </button>
+                            <stackView distribution="fillEqually" orientation="horizontal" alignment="centerY" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="knS-EF-jDn">
+                                <rect key="frame" x="12" y="12" width="616" height="18"/>
+                                <subviews>
+                                    <progressIndicator wantsLayer="YES" maxValue="1" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="sGh-ws-oXN">
+                                        <rect key="frame" x="0.0" y="-1" width="151" height="20"/>
+                                    </progressIndicator>
+                                    <progressIndicator wantsLayer="YES" maxValue="1" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="2gh-Qr-QkY">
+                                        <rect key="frame" x="155" y="-1" width="151" height="20"/>
+                                    </progressIndicator>
+                                    <progressIndicator wantsLayer="YES" maxValue="1" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="Njj-zM-jWr">
+                                        <rect key="frame" x="310" y="-1" width="151" height="20"/>
+                                    </progressIndicator>
+                                    <progressIndicator wantsLayer="YES" maxValue="1" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="INX-X6-G8d">
+                                        <rect key="frame" x="465" y="-1" width="151" height="20"/>
+                                    </progressIndicator>
+                                </subviews>
+                                <visibilityPriorities>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                </visibilityPriorities>
+                                <customSpacing>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                </customSpacing>
+                            </stackView>
                         </subviews>
                         <constraints>
+                            <constraint firstItem="knS-EF-jDn" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="12" id="0lH-vo-ZGP"/>
                             <constraint firstItem="G1Q-Rs-riJ" firstAttribute="top" secondItem="AWt-XN-U48" secondAttribute="bottom" constant="12" symbolic="YES" id="2Zc-Ig-o3f"/>
                             <constraint firstItem="xmM-Xe-JBb" firstAttribute="top" secondItem="n2R-cz-6ZB" secondAttribute="bottom" constant="7" id="4Y0-9r-GMP"/>
                             <constraint firstItem="lTg-ct-pTa" firstAttribute="leading" secondItem="3lz-UZ-oeQ" secondAttribute="leading" id="5nL-5a-DbX"/>
@@ -990,6 +1021,7 @@
                             <constraint firstAttribute="trailing" secondItem="AWt-XN-U48" secondAttribute="trailing" constant="58" id="Nr2-X6-dLv"/>
                             <constraint firstItem="9YW-SB-pco" firstAttribute="top" secondItem="2DY-uJ-hH1" secondAttribute="bottom" constant="8" symbolic="YES" id="OR2-4W-ZLP"/>
                             <constraint firstItem="xmM-Xe-JBb" firstAttribute="leading" secondItem="n2R-cz-6ZB" secondAttribute="leading" id="RM7-67-U1j"/>
+                            <constraint firstAttribute="trailing" secondItem="knS-EF-jDn" secondAttribute="trailing" constant="12" id="RP7-KG-ya8"/>
                             <constraint firstItem="M61-z4-YGf" firstAttribute="top" secondItem="7gY-VU-AfY" secondAttribute="bottom" constant="44" id="RUp-lG-dHS"/>
                             <constraint firstAttribute="bottom" secondItem="3lz-UZ-oeQ" secondAttribute="bottom" constant="75" id="VQf-Ye-PbG"/>
                             <constraint firstItem="xmM-Xe-JBb" firstAttribute="top" secondItem="LR4-fg-O6l" secondAttribute="bottom" constant="46" id="Vz7-YL-yqm"/>
@@ -1015,6 +1047,7 @@
                             <constraint firstItem="M61-z4-YGf" firstAttribute="leading" secondItem="3lz-UZ-oeQ" secondAttribute="trailing" constant="30" id="qpr-v6-B7J"/>
                             <constraint firstItem="3lz-UZ-oeQ" firstAttribute="top" secondItem="574-4I-o6Q" secondAttribute="bottom" constant="8" symbolic="YES" id="rTB-e7-7Be"/>
                             <constraint firstItem="7gY-VU-AfY" firstAttribute="top" secondItem="lTg-ct-pTa" secondAttribute="bottom" constant="8" symbolic="YES" id="tHK-6T-oVR"/>
+                            <constraint firstAttribute="bottom" secondItem="knS-EF-jDn" secondAttribute="bottom" constant="12" id="tQH-lH-ddh"/>
                             <constraint firstItem="AWt-XN-U48" firstAttribute="trailing" secondItem="9YW-SB-pco" secondAttribute="trailing" id="z74-Ou-zp8"/>
                             <constraint firstItem="AWt-XN-U48" firstAttribute="trailing" secondItem="T8y-bV-8Ph" secondAttribute="trailing" id="z7k-6W-JZN"/>
                         </constraints>
@@ -1027,6 +1060,10 @@
                         <outlet property="ibFnView" destination="3lz-UZ-oeQ" id="Z5o-cj-eQJ"/>
                         <outlet property="ibLearnView" destination="1rv-R8-fXe" id="3cw-dy-X65"/>
                         <outlet property="ibMidiSourcesTableView" destination="ozB-0n-XBs" id="PP7-Xd-O3V"/>
+                        <outlet property="ibProgress1" destination="sGh-ws-oXN" id="07A-Ws-T95"/>
+                        <outlet property="ibProgress2" destination="2gh-Qr-QkY" id="oNA-Fg-fNw"/>
+                        <outlet property="ibProgress3" destination="Njj-zM-jWr" id="Zy3-c9-ihE"/>
+                        <outlet property="ibProgress4" destination="INX-X6-G8d" id="N42-wX-NJa"/>
                         <outlet property="ibProgressFader" destination="xmM-Xe-JBb" id="Tyu-40-TFL"/>
                         <outlet property="ibSmoothButton" destination="AWt-XN-U48" id="7eo-KQ-mMw"/>
                     </connections>

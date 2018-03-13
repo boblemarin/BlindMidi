@@ -32,6 +32,10 @@ class ViewController: NSViewController {
   @IBOutlet weak var ibDurationField: NSTextField!
   @IBOutlet weak var ibLearnView:NSView!
   @IBOutlet weak var ibFnView: PKFunctionView!
+  @IBOutlet weak var ibProgress1: NSProgressIndicator!
+  @IBOutlet weak var ibProgress2: NSProgressIndicator!
+  @IBOutlet weak var ibProgress3: NSProgressIndicator!
+  @IBOutlet weak var ibProgress4: NSProgressIndicator!
   
   // Input list Icon
   let imgCheckOn = NSImage(named: NSImage.Name(rawValue: "checkbox_on"))
@@ -248,6 +252,22 @@ class ViewController: NSViewController {
 //      midi.sendBack((value.0, value.1, blinkState ? value.2 : 0))
 //    }
 //  }
+  
+  //MARK: feedback function
+  func updateProgressBars(for transitions:[SCTransition]) {
+    let tc = transitions.count
+    let p1 = tc > 0 ? transitions[0].position : 0
+    let p2 = tc > 1 ? transitions[1].position : 0
+    let p3 = tc > 2 ? transitions[2].position : 0
+    let p4 = tc > 3 ? transitions[3].position : 0
+    
+    DispatchQueue.main.async {
+      self.ibProgress1.doubleValue = p1
+      self.ibProgress2.doubleValue = p2
+      self.ibProgress3.doubleValue = p3
+      self.ibProgress4.doubleValue = p4
+    }
+  }
 }
 
 //MARK: SCMidi delegates
