@@ -62,7 +62,7 @@ class ViewController: NSViewController {
   var isBlindModeActive = false
   var faderValue:UInt8 = 0
   var curveValue:Double = 0
-  var durationValue:Double = 0
+  var durationValue:Double = 16
   
   //var blinkTimer:Timer!
 //  var blinkState = true
