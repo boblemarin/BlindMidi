@@ -159,6 +159,8 @@ class SCSmoothManager {
     if hasCompletedTransitions {
       transitions = transitions.filter { $0.position < 1 }
     }
+    
+    valueDelegate?.updateProgressBars(for: transitions)
   }
   
   func bypassProperty(withID id:UInt16) {
