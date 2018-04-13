@@ -70,6 +70,9 @@ class ViewController: NSViewController {
   var smooth:SCSmoothManager!
 //  let defaults = UserDefaults.standard
   
+  
+  // MARK: ViewController methods
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
@@ -145,6 +148,55 @@ class ViewController: NSViewController {
   
   // MARK: IB Actions
   
+  override func keyDown(with event: NSEvent) {
+    guard isLearnModeActive == true, event.keyCode == 51 || event.keyCode == 117 else {
+      return
+    }
+    guard let button = ibLearnedButton else {
+      // one button has to be selected
+      return
+    }
+
+    switch button.tag {
+    case 2: // Fader
+      midiFaderID = 0
+      midiFader = (0, 0)
+      UserDefaults.standard.set(midiFaderID, forKey: "midiFaderCC")
+      
+    case 3: // Toggle
+      midiToggleID = 0
+      midiToggle = (0, 0)
+      UserDefaults.standard.set(midiToggleID, forKey: "midiToggleCC")
+      
+    case 4: // Duration
+      midiDurationID = 0
+      UserDefaults.standard.set(midiDurationID, forKey: "midiDurationCC")
+      
+    case 5: // Curve
+      midiCurveID = 0
+      UserDefaults.standard.set(midiCurveID, forKey: "midiCurveCC")
+      
+    case 6: // Smooth start
+      midiSmoothID = 0
+      UserDefaults.standard.set(midiSmoothID, forKey: "midiSmoothCC")
+      
+    case 7: // Cancel/Reset
+      midiCancelID = 0
+      UserDefaults.standard.set(midiCancelID, forKey: "midiCancelCC")
+      
+    default:
+      return
+    }
+    DispatchQueue.main.async {
+      button.title = ""
+//      button.isBordered = false
+    }
+//    isLearnModeActive = false
+//    currentLearnTag = 0
+    
+//    print("Cleaning for tag : \(button.tag)")
+  }
+  
   @IBAction func onToggleLearnView(_ sender: Any) {
     if let btn = ibLearnedButton {
       btn.isBordered = false
@@ -199,6 +251,9 @@ class ViewController: NSViewController {
   }
   
   func formatId(_ id:UInt16) -> String {
+    guard id > 0 else {
+      return ""
+    }
     return "\((id>>8)-175)/\(id & 0xFF)"
   }
   
