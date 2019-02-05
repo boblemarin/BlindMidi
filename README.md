@@ -2,6 +2,11 @@
 # BlindMidi
 ![Logo](https://github.com/boblemarin/BlindMidi/raw/master/Icon/eye.png)
 
+BlindMidi is an applications that helps you automate Midi parameters change over time in an intuitive manner. It has been developed to help dealing with live situations requiring more hands that you have. See the (upcomning) following video to get a very quick overview.
+
+
+
+
 This is an alpha version of an ongoing project, use it at your own risks.
 
 # Setup instructions
